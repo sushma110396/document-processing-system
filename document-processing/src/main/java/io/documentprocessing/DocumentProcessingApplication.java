@@ -1,4 +1,4 @@
-package com.example.documentprocessing;
+package io.documentprocessing;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

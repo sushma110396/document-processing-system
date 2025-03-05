@@ -1,4 +1,4 @@
-package com.example.documentprocessing.model;
+package io.documentprocessing.model;
 
 import java.time.LocalDateTime;
 
