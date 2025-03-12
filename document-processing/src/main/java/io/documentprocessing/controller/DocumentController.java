@@ -27,19 +27,34 @@ public class DocumentController {
     public ResponseEntity<Document> uploadDocument(
             @RequestParam("file") MultipartFile file,
             @RequestParam("name") String name,
-            @RequestParam("type") String type) {
+            @RequestParam("type") String type) throws IOException {
 
-        try {
-            Document savedDocument = documentService.saveDocument(file, name, type);
-            return ResponseEntity.ok(savedDocument);
-        } catch (IOException e) {
-            return ResponseEntity.badRequest().build();
-        }
+    	 if (file.isEmpty()) {
+    	        throw new IllegalArgumentException("File cannot be empty.");
+    	    }
+
+    	    if (file.getSize() > 5_000_000) { // Limit: 5MB
+    	        throw new IllegalArgumentException("File size exceeds the limit (5MB).");
+    	    }
+
+    	    if (!type.equals("application/pdf") && !type.equals("application/msword")) {
+    	        throw new IllegalArgumentException("Only PDF and Word documents are allowed.");
+    	    }
+
+    	    Document savedDocument = documentService.saveDocument(file, name, type);
+    	    return ResponseEntity.ok(savedDocument);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Document> getDocumentById(@PathVariable Long id) {
-        return ResponseEntity.ok(documentService.getDocumentById(id));
+    public ResponseEntity<Document> getDocumentById(@PathVariable("id") Long id) {
+    	 System.out.println("Fetching document with ID: " + id);
+    	 
+        Document document = documentService.getDocumentById(id);
+        
+        if (document == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(document);
     }
 
     @GetMapping
