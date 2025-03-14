@@ -21,9 +21,18 @@ public class DocumentMetadata {
 	@Column(nullable = false)
 	private LocalDateTime createdAt;
 
+	@Column(nullable = false, updatable = false)
+    private LocalDateTime uploadTimestamp; 
+	
 	@Column
 	private LocalDateTime processedAt;
 
+	 public DocumentMetadata() {
+		 this.uploadTimestamp = LocalDateTime.now(); 
+		 this.createdAt = LocalDateTime.now();
+		 this.status = "PENDING"; 
+	}
+	 
 	public Long getId() {
 		return id;
 	}
@@ -55,5 +64,15 @@ public class DocumentMetadata {
 	public void setCreatedAt(LocalDateTime createdAt) {
 		this.createdAt = createdAt;
 	}
+	
+	public LocalDateTime getUploadTimestamp() { 
+		return uploadTimestamp; 
+	}
+
+    public void setUploadTimestamp(LocalDateTime uploadTimestamp) { 
+    	this.uploadTimestamp = uploadTimestamp; 
+    }
+
+	
 
 }

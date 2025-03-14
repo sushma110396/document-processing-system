@@ -65,11 +65,12 @@ public class DocumentController {
         return ResponseEntity.ok(document);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteDocument(@PathVariable Long id) {
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> deleteDocument(@PathVariable("id") Long id) {
         documentService.deleteDocument(id);
         return ResponseEntity.noContent().build();
     }
+
     
     @GetMapping("/download/{id}")
     public ResponseEntity<byte[]> downloadDocument(@PathVariable("id") Long id) 
@@ -102,5 +103,10 @@ public class DocumentController {
         return ResponseEntity.ok(metadataList);
     }
 
+    // Helps users know which files exist before downloading
+    @GetMapping("/list")
+    public ResponseEntity<List<Document>> listDocuments() {
+        return ResponseEntity.ok(documentService.getAllDocuments());
+    }
 
 }
