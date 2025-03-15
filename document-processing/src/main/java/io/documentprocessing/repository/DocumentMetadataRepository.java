@@ -10,7 +10,7 @@ import java.util.List;
 @Repository
 public interface DocumentMetadataRepository extends JpaRepository<DocumentMetadata, Long> {
     
-    // Custom query: Find metadata by status
+    // Find metadata by status
     List<DocumentMetadata> findByStatus(String status);
 
     // Find documents uploaded after a certain date

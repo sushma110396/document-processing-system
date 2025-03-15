@@ -27,7 +27,8 @@ public class DocumentMetadata {
 	@Column
 	private LocalDateTime processedAt;
 
-	 public DocumentMetadata() {
+	
+	public DocumentMetadata() {
 		 this.uploadTimestamp = LocalDateTime.now(); 
 		 this.createdAt = LocalDateTime.now();
 		 this.status = "PENDING"; 
@@ -73,6 +74,13 @@ public class DocumentMetadata {
     	this.uploadTimestamp = uploadTimestamp; 
     }
 
-	
+    public LocalDateTime getProcessedAt() {
+		return processedAt;
+	}
+
+	public void setProcessedAt(LocalDateTime processedAt) {
+		this.processedAt = processedAt;
+	}
+
 
 }

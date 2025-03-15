@@ -17,7 +17,7 @@ public class Document {
 
    
     @Column(columnDefinition = "BYTEA")  
-    private byte[] data; // Must be byte[] and NOT Long or Integer
+    private byte[] data; 
 
     // Getters and Setters
     public Long getId() { return id; }
