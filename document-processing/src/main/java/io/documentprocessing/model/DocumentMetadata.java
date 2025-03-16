@@ -27,6 +27,8 @@ public class DocumentMetadata {
 	@Column
 	private LocalDateTime processedAt;
 
+	@Column(columnDefinition = "TEXT")
+	private String extractedText;
 	
 	public DocumentMetadata() {
 		 this.uploadTimestamp = LocalDateTime.now(); 
@@ -82,5 +84,12 @@ public class DocumentMetadata {
 		this.processedAt = processedAt;
 	}
 
+	public String getExtractedText() {
+		return extractedText;
+	}
+
+	public void setExtractedText(String extractedText) {
+		this.extractedText = extractedText;
+	}
 
 }

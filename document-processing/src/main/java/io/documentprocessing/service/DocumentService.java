@@ -18,11 +18,13 @@ public class DocumentService {
 
     private final DocumentRepository documentRepository;
     private final DocumentMetadataRepository documentMetadataRepository;
+    private final TextExtractionService textExtractionService;
 
     @Autowired
-    public DocumentService(DocumentRepository documentRepository, DocumentMetadataRepository documentMetadataRepository) {
+    public DocumentService(DocumentRepository documentRepository, DocumentMetadataRepository documentMetadataRepository, TextExtractionService textExtractionService) {
         this.documentRepository = documentRepository;
         this.documentMetadataRepository = documentMetadataRepository;
+        this.textExtractionService = textExtractionService;
     }
 
     public Document saveDocument(MultipartFile file, String name, String type) throws IOException {
@@ -43,6 +45,8 @@ public class DocumentService {
     	    metadata.setUploadTimestamp(LocalDateTime.now());
     	    documentMetadataRepository.save(metadata);
 
+    	    //Start document processing asynchronously
+    	    textExtractionService.processDocument(savedDocument, metadata);
     	    return savedDocument;
     }
 
