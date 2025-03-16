@@ -8,8 +8,8 @@ import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.sax.BodyContentHandler;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import io.documentprocessing.model.Document;
 import io.documentprocessing.model.DocumentMetadata;
@@ -40,15 +40,17 @@ public class TextExtractionService {
         }
     }
 
-    @Async
+    @Transactional
     public void processDocument(Document document, DocumentMetadata metadata) {
+        // Extract text
         String extractedText = extractText(document);
-
-        // Update metadata after processing
-        metadata.setStatus("Processed");
+        
+        // Update metadata with extracted text
+        metadata.setExtractedText(extractedText);
         metadata.setProcessedAt(LocalDateTime.now());
-        metadataRepository.save(metadata);
+        metadata.setStatus("Processed");
 
-        System.out.println("Extracted Text:\n" + extractedText);
+        // Save updated metadata
+        metadataRepository.save(metadata);
     }
 }
