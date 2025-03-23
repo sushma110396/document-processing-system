@@ -1,11 +1,13 @@
 package io.documentprocessing.repository;
 
-import io.documentprocessing.model.DocumentMetadata;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import io.documentprocessing.model.DocumentMetadata;
 
 @Repository
 public interface DocumentMetadataRepository extends JpaRepository<DocumentMetadata, Long> {
@@ -15,4 +17,6 @@ public interface DocumentMetadataRepository extends JpaRepository<DocumentMetada
 
     // Find documents uploaded after a certain date
     List<DocumentMetadata> findByUploadTimestampAfter(LocalDateTime timestamp);
+    
+    Optional<DocumentMetadata> findByDocumentId(Long documentId);
 }

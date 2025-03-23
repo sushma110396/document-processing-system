@@ -1,10 +1,15 @@
 package io.documentprocessing.controller;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -19,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import io.documentprocessing.model.Document;
+import io.documentprocessing.repository.DocumentMetadataRepository;
 import io.documentprocessing.service.DocumentService;
 
 @RestController
@@ -26,9 +32,11 @@ import io.documentprocessing.service.DocumentService;
 public class DocumentController {
 
     private final DocumentService documentService;
+    private final DocumentMetadataRepository metadataRepository;
 
-    public DocumentController(DocumentService documentService) {
+    public DocumentController(DocumentService documentService, DocumentMetadataRepository metadataRepository) {
         this.documentService = documentService;
+        this.metadataRepository = metadataRepository;
     }
     
     @PostMapping("/upload")
@@ -45,9 +53,9 @@ public class DocumentController {
     	        throw new IllegalArgumentException("File size exceeds the limit (5MB).");
     	    }
 
-    	    if (!type.equals("application/pdf") && !type.equals("application/msword")) {
+    	    /*if (!type.equals("application/pdf") && !type.equals("application/msword")) {
     	        throw new IllegalArgumentException("Only PDF and Word documents are allowed.");
-    	    }
+    	    }*/
 
     	    Document savedDocument = documentService.saveDocument(file, name, type);
     	    return ResponseEntity.ok(savedDocument);
@@ -55,15 +63,13 @@ public class DocumentController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Document> getDocumentById(@PathVariable("id") Long id) {
-    	 System.out.println("Fetching document with ID: " + id);
-    	 
-        Document document = documentService.getDocumentById(id);
-        
-        if (document == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(document);
+        System.out.println("Fetching document with ID: " + id);
+
+        return documentService.getDocumentById(id)
+                .map(ResponseEntity::ok) // If present, return 200 OK
+                .orElseGet(() -> ResponseEntity.notFound().build()); // If not found, return 404
     }
+
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteDocument(@PathVariable("id") Long id) {
@@ -73,19 +79,23 @@ public class DocumentController {
 
     
     @GetMapping("/download/{id}")
-    public ResponseEntity<byte[]> downloadDocument(@PathVariable("id") Long id) 
- {
-    	Document document = documentService.getDocumentById(id);
-        
-        if (document == null) {
+    public ResponseEntity<byte[]> downloadDocument(@PathVariable("id") Long id) {
+        Optional<Document> documentOptional = documentService.getDocumentById(id);
+
+        // Check if the document exists
+        if (documentOptional.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
+
+        // Retrieve the document from Optional
+        Document document = documentOptional.get();
 
         return ResponseEntity.ok()
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + document.getName() + "\"")
             .contentType(MediaType.parseMediaType(document.getType()))
             .body(document.getData());
     }
+
     
     @GetMapping
     public ResponseEntity<List<Map<String, Object>>> getAllDocuments() {
@@ -108,5 +118,55 @@ public class DocumentController {
     public ResponseEntity<List<Document>> listDocuments() {
         return ResponseEntity.ok(documentService.getAllDocuments());
     }
+
+    @GetMapping("/extracted-text/{id}")
+    public ResponseEntity<String> getExtractedText(@PathVariable("id") Long documentId) {
+        return metadataRepository.findByDocumentId(documentId)
+                .map(metadata -> ResponseEntity.ok(metadata.getExtractedText()))
+                .orElse(ResponseEntity.notFound().build());
+    }
+    
+    @PostMapping("/upload/bulk")
+    public ResponseEntity<Map<String, Object>> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files) {
+        List<String> success = new ArrayList<>();
+        List<String> failed = new ArrayList<>();
+
+        for (MultipartFile file : files) {
+            try {
+                String name = file.getOriginalFilename();
+                String type = file.getContentType();
+                documentService.saveDocument(file, name, type);
+                success.add(name);
+            } catch (Exception e) {
+                failed.add(file.getOriginalFilename() + " - " + e.getMessage());
+            }
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("successfulUploads", success);
+        response.put("failedUploads", failed);
+        response.put("totalFiles", files.length);
+
+        return ResponseEntity.ok(response);
+    }
+	/* Needs to be corrected, holding it for now, check if time permits
+	 * @GetMapping("/download/all") public ResponseEntity<byte[]>
+	 * downloadAllDocuments() throws IOException { List<Document> documents =
+	 * documentService.getAllDocuments();
+	 * 
+	 * ByteArrayOutputStream baos = new ByteArrayOutputStream(); ZipOutputStream
+	 * zipOut = new ZipOutputStream(baos);
+	 * 
+	 * for (Document doc : documents) { ZipEntry entry = new
+	 * ZipEntry(doc.getName()); zipOut.putNextEntry(entry);
+	 * zipOut.write(doc.getData()); zipOut.closeEntry(); }
+	 * 
+	 * zipOut.close();
+	 * 
+	 * return ResponseEntity.ok() .header(HttpHeaders.CONTENT_DISPOSITION,
+	 * "attachment; filename=\"all_documents.zip\"")
+	 * .contentType(MediaType.APPLICATION_OCTET_STREAM) .body(baos.toByteArray()); }
+	 */
+
 
 }

@@ -10,3 +10,4 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
     List<Document> findByType(String type); 
 }
 
+ 

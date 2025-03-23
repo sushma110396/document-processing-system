@@ -3,8 +3,10 @@ package io.documentprocessing.service;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -50,13 +52,15 @@ public class DocumentService {
     	    return savedDocument;
     }
 
-    public Document getDocumentById(Long id) {
-        return documentRepository.findById(id).orElse(null);
+    public Optional<Document> getDocumentById(Long id) {
+        return documentRepository.findById(id);
     }
 
+
     public List<Document> getAllDocuments() {
-        return documentRepository.findAll();
+        return documentRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
     }
+
 
     public void deleteDocument(Long id) {
         documentRepository.deleteById(id);
