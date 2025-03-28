@@ -21,36 +21,53 @@ public class DocumentService {
     private final DocumentRepository documentRepository;
     private final DocumentMetadataRepository documentMetadataRepository;
     private final TextExtractionService textExtractionService;
+    private final S3StorageService s3StorageService;
 
     @Autowired
-    public DocumentService(DocumentRepository documentRepository, DocumentMetadataRepository documentMetadataRepository, TextExtractionService textExtractionService) {
+    public DocumentService(DocumentRepository documentRepository, DocumentMetadataRepository documentMetadataRepository, 
+    		TextExtractionService textExtractionService, S3StorageService s3StorageService ) {
         this.documentRepository = documentRepository;
         this.documentMetadataRepository = documentMetadataRepository;
         this.textExtractionService = textExtractionService;
+        this.s3StorageService = s3StorageService;
     }
 
+	/*
+	 * public Document saveDocument(MultipartFile file, String name, String type)
+	 * throws IOException { if (file.isEmpty()) { throw new
+	 * IOException("File is empty, cannot save."); }
+	 * 
+	 * // Save Document Document document = new Document(); document.setName(name);
+	 * document.setType(type); document.setData(file.getBytes()); Document
+	 * savedDocument = documentRepository.save(document);
+	 * 
+	 * // Save Metadata DocumentMetadata metadata = new DocumentMetadata();
+	 * metadata.setDocument(savedDocument);
+	 * metadata.setUploadTimestamp(LocalDateTime.now());
+	 * documentMetadataRepository.save(metadata);
+	 * 
+	 * //Start document processing asynchronously
+	 * textExtractionService.processDocument(savedDocument, metadata); return
+	 * savedDocument; }
+	 */
+    
     public Document saveDocument(MultipartFile file, String name, String type) throws IOException {
-    	  if (file.isEmpty()) {
-    	        throw new IOException("File is empty, cannot save.");
-    	    }
+        if (file.isEmpty()) throw new IOException("File is empty.");
 
-    	    // Save Document
-    	    Document document = new Document();
-    	    document.setName(name);
-    	    document.setType(type);
-    	    document.setData(file.getBytes());
-    	    Document savedDocument = documentRepository.save(document);
+        String s3Key;
+        try {
+            s3Key = s3StorageService.uploadFile(file); // Upload to S3
+        } catch (Exception e) {
+            throw new IOException("S3 upload failed", e);
+        }
 
-    	    // Save Metadata 
-    	    DocumentMetadata metadata = new DocumentMetadata();
-    	    metadata.setDocument(savedDocument); 
-    	    metadata.setUploadTimestamp(LocalDateTime.now());
-    	    documentMetadataRepository.save(metadata);
-
-    	    //Start document processing asynchronously
-    	    textExtractionService.processDocument(savedDocument, metadata);
-    	    return savedDocument;
+        Document document = new Document();
+        document.setName(name);
+        document.setType(type);
+        document.setS3Key(s3Key); // New field to store key instead of binary
+        return documentRepository.save(document);
     }
+
 
     public Optional<Document> getDocumentById(Long id) {
         return documentRepository.findById(id);

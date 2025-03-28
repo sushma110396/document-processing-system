@@ -18,6 +18,8 @@ repositories {
 }
 
 dependencies {
+	compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
 	implementation 'org.springframework.boot:spring-boot-starter-amqp'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -29,6 +31,7 @@ dependencies {
     implementation 'com.itextpdf:itextpdf:5.5.13.3'
     implementation 'net.sourceforge.tess4j:tess4j:4.5.5'
     implementation 'org.openpnp:opencv:4.5.1-2'
+    implementation 'software.amazon.awssdk:s3:2.25.23'
 	runtimeOnly 'org.postgresql:postgresql'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.amqp:spring-rabbit-test'

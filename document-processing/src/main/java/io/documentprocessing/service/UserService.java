@@ -1,11 +1,12 @@
 package io.documentprocessing.service;
 
-import io.documentprocessing.model.User;
-import io.documentprocessing.repository.UserRepository;
-
-import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+
+import io.documentprocessing.model.User;
+import io.documentprocessing.repository.UserRepository;
 
 @Service
 public class UserService {

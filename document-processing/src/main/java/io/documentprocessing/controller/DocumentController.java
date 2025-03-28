@@ -1,6 +1,5 @@
 package io.documentprocessing.controller;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -78,7 +75,7 @@ public class DocumentController {
     }
 
     
-    @GetMapping("/download/{id}")
+    /*@GetMapping("/download/{id}")
     public ResponseEntity<byte[]> downloadDocument(@PathVariable("id") Long id) {
         Optional<Document> documentOptional = documentService.getDocumentById(id);
 
@@ -94,7 +91,7 @@ public class DocumentController {
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + document.getName() + "\"")
             .contentType(MediaType.parseMediaType(document.getType()))
             .body(document.getData());
-    }
+    }*/
 
     
     @GetMapping
