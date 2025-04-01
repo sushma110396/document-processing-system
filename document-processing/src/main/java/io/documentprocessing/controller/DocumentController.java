@@ -75,23 +75,18 @@ public class DocumentController {
     }
 
     
-    /*@GetMapping("/download/{id}")
-    public ResponseEntity<byte[]> downloadDocument(@PathVariable("id") Long id) {
-        Optional<Document> documentOptional = documentService.getDocumentById(id);
+    @GetMapping("/download/{id}")
+    public ResponseEntity<byte[]> downloadDocument(@PathVariable("id") Long id) throws IOException {
+    	Document document = documentService.getDocumentById(id)
+                .orElseThrow(() -> new RuntimeException("Document not found"));
 
-        // Check if the document exists
-        if (documentOptional.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        // Retrieve the document from Optional
-        Document document = documentOptional.get();
+        byte[] fileBytes = documentService.downloadDocument(id);
 
         return ResponseEntity.ok()
-            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + document.getName() + "\"")
-            .contentType(MediaType.parseMediaType(document.getType()))
-            .body(document.getData());
-    }*/
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + document.getName() + "\"")
+                .contentType(MediaType.parseMediaType(document.getType()))
+                .body(fileBytes);
+    }
 
     
     @GetMapping

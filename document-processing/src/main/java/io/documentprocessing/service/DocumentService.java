@@ -82,4 +82,12 @@ public class DocumentService {
     public void deleteDocument(Long id) {
         documentRepository.deleteById(id);
     }
+    
+    //Download doc from S3 service
+    public byte[] downloadDocument(Long id) throws IOException {
+        Document doc = documentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Document not found"));
+        return s3StorageService.downloadFile(doc.getS3Key());
+    }
+
 }
