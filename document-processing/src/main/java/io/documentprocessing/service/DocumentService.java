@@ -32,41 +32,41 @@ public class DocumentService {
         this.s3StorageService = s3StorageService;
     }
 
-	/*
-	 * public Document saveDocument(MultipartFile file, String name, String type)
-	 * throws IOException { if (file.isEmpty()) { throw new
-	 * IOException("File is empty, cannot save."); }
-	 * 
-	 * // Save Document Document document = new Document(); document.setName(name);
-	 * document.setType(type); document.setData(file.getBytes()); Document
-	 * savedDocument = documentRepository.save(document);
-	 * 
-	 * // Save Metadata DocumentMetadata metadata = new DocumentMetadata();
-	 * metadata.setDocument(savedDocument);
-	 * metadata.setUploadTimestamp(LocalDateTime.now());
-	 * documentMetadataRepository.save(metadata);
-	 * 
-	 * //Start document processing asynchronously
-	 * textExtractionService.processDocument(savedDocument, metadata); return
-	 * savedDocument; }
-	 */
+	
     
     public Document saveDocument(MultipartFile file, String name, String type) throws IOException {
-        if (file.isEmpty()) throw new IOException("File is empty.");
+        if (file.isEmpty()) {
+            throw new IOException("File is empty.");
+        }
 
+        // Upload to S3 and get the object key
         String s3Key;
         try {
-            s3Key = s3StorageService.uploadFile(file); // Upload to S3
+            s3Key = s3StorageService.uploadFile(file);
         } catch (Exception e) {
             throw new IOException("S3 upload failed", e);
         }
 
+        // Save document info to DB
         Document document = new Document();
-        document.setName(name);
+        document.setName(file.getOriginalFilename()); // Use actual filename
         document.setType(type);
-        document.setS3Key(s3Key); // New field to store key instead of binary
-        return documentRepository.save(document);
+        document.setS3Key(s3Key);
+        Document savedDocument = documentRepository.save(document);
+
+        // Save metadata
+        DocumentMetadata metadata = new DocumentMetadata();
+        metadata.setDocument(savedDocument);
+        metadata.setStatus("Pending");
+        metadata.setUploadTimestamp(LocalDateTime.now());
+        documentMetadataRepository.save(metadata);
+
+        // Trigger text extraction asynchronously
+        textExtractionService.processDocument(savedDocument, metadata);
+
+        return savedDocument;
     }
+
 
 
     public Optional<Document> getDocumentById(Long id) {

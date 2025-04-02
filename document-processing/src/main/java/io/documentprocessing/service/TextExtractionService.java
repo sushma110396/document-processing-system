@@ -1,6 +1,5 @@
 package io.documentprocessing.service;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 
@@ -9,6 +8,7 @@ import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.sax.BodyContentHandler;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,32 +25,20 @@ public class TextExtractionService {
     private final DocumentMetadataRepository metadataRepository;
     private final S3Client s3Client;
 
+    @Value("${aws.s3.bucket}")
+    private String bucket;
 
     public TextExtractionService(DocumentMetadataRepository metadataRepository,  S3Client s3Client) {
         this.metadataRepository = metadataRepository;
         this.s3Client = s3Client;
     }
-
-	/*
-	 * public String extractText(Document document) { InputStream inputStream = new
-	 * ByteArrayInputStream(document.getData()); // Process text-based files using
-	 * Apache Tika
-	 * 
-	 * try (inputStream) { BodyContentHandler handler = new BodyContentHandler(-1);
-	 * Metadata metadata = new Metadata(); AutoDetectParser parser = new
-	 * AutoDetectParser(); parser.parse(inputStream, handler, metadata, new
-	 * ParseContext()); return handler.toString().trim(); } catch (Exception e) {
-	 * throw new RuntimeException("Text extraction failed", e); } }
-	 */
     
     public String extractText(Document document) {
-        // Load the file from S3
         try (InputStream inputStream = s3Client.getObject(GetObjectRequest.builder()
-                .bucket("your-bucket-name")
-                .key(document.getS3Key()) // Use s3Key field in Document model
+                .bucket(bucket)
+                .key(document.getS3Key())
                 .build())) {
 
-            // Use Apache Tika to extract text
             BodyContentHandler handler = new BodyContentHandler(-1);
             Metadata metadata = new Metadata();
             AutoDetectParser parser = new AutoDetectParser();
