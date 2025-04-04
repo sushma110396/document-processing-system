@@ -89,5 +89,10 @@ public class DocumentService {
                 .orElseThrow(() -> new RuntimeException("Document not found"));
         return s3StorageService.downloadFile(doc.getS3Key());
     }
+    
+    public List<DocumentMetadata> searchDocuments(String query) {
+        return documentMetadataRepository.searchByNameOrText(query);
+    }
+
 
 }

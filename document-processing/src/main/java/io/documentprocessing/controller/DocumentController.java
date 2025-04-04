@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpHeaders;
@@ -21,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import io.documentprocessing.model.Document;
+import io.documentprocessing.model.DocumentMetadata;
 import io.documentprocessing.repository.DocumentMetadataRepository;
 import io.documentprocessing.service.DocumentService;
 
@@ -159,6 +159,11 @@ public class DocumentController {
 	 * "attachment; filename=\"all_documents.zip\"")
 	 * .contentType(MediaType.APPLICATION_OCTET_STREAM) .body(baos.toByteArray()); }
 	 */
+    @GetMapping("/search")
+    public ResponseEntity<List<DocumentMetadata>> searchDocuments(@RequestParam("q") String query) {
+        List<DocumentMetadata> results = documentService.searchDocuments(query);
+        return ResponseEntity.ok(results);
+    }
 
 
 }

@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import io.documentprocessing.model.DocumentMetadata;
@@ -19,4 +21,12 @@ public interface DocumentMetadataRepository extends JpaRepository<DocumentMetada
     List<DocumentMetadata> findByUploadTimestampAfter(LocalDateTime timestamp);
     
     Optional<DocumentMetadata> findByDocumentId(Long documentId);
+    
+    // Search in both document name and extracted text
+    @Query("SELECT m FROM DocumentMetadata m " +
+    	       "JOIN m.document d " +
+    	       "WHERE LOWER(d.name) LIKE LOWER(CONCAT('%', :query, '%')) " +
+    	       "OR LOWER(m.extractedText) LIKE LOWER(CONCAT('%', :query, '%'))")
+    	List<DocumentMetadata> searchByNameOrText(@Param("query") String query);
+
 }
