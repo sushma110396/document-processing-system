@@ -1,12 +1,14 @@
 import React from 'react';
 import UploadForm from '../components/UploadForm';
+import DownloadDocument from './DownloadDocument';
+
 
 const Home = () => {
   return (
     <div>
       <h1>Document Processing System</h1>
       <UploadForm />
-       <DownloadDocument/>
+      <DownloadDocument/>
     </div>
   );
 };
