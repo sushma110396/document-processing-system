@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -26,6 +28,11 @@ public class Document {
 	/*
 	 * @Column(columnDefinition = "BYTEA") private byte[] data;
 	 */
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = true) // Create a new column named `user_id` in documents
+    private User owner;
+
+
     
     // Getters and Setters
     public Long getId() { return id; }
@@ -48,4 +55,11 @@ public class Document {
 	public void setS3Key(String s3Key) {
 		this.s3Key = s3Key;
 	}
+	
+	public User getOwner() { 
+		return owner; 
+	}
+    public void setOwner(User owner) { 
+    	this.owner = owner; 
+    }
 }

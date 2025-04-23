@@ -2,6 +2,7 @@ package io.documentprocessing.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import java.util.stream.Collectors;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,7 +23,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import io.documentprocessing.model.Document;
 import io.documentprocessing.model.DocumentMetadata;
+import io.documentprocessing.model.User;
 import io.documentprocessing.repository.DocumentMetadataRepository;
+import io.documentprocessing.repository.UserRepository;
 import io.documentprocessing.service.DocumentService;
 
 @RestController
@@ -30,17 +34,20 @@ public class DocumentController {
 
     private final DocumentService documentService;
     private final DocumentMetadataRepository metadataRepository;
+    private final UserRepository userRepository;
 
-    public DocumentController(DocumentService documentService, DocumentMetadataRepository metadataRepository) {
+    public DocumentController(DocumentService documentService, DocumentMetadataRepository metadataRepository, UserRepository userRepository ) {
         this.documentService = documentService;
         this.metadataRepository = metadataRepository;
+        this.userRepository = userRepository;
     }
     
     @PostMapping("/upload")
     public ResponseEntity<Document> uploadDocument(
             @RequestParam("file") MultipartFile file,
             @RequestParam("name") String name,
-            @RequestParam("type") String type) throws IOException {
+            @RequestParam("type") String type,
+            @RequestParam("userId") Long userId) throws IOException {
 
     	 if (file.isEmpty()) {
     	        throw new IllegalArgumentException("File cannot be empty.");
@@ -54,7 +61,9 @@ public class DocumentController {
     	        throw new IllegalArgumentException("Only PDF and Word documents are allowed.");
     	    }*/
 
-    	    Document savedDocument = documentService.saveDocument(file, name, type);
+    	    User user = userRepository.findById(userId).orElse(null);
+
+    	    Document savedDocument = documentService.saveDocument(file, name, type, user);
     	    return ResponseEntity.ok(savedDocument);
     }
 
@@ -67,14 +76,8 @@ public class DocumentController {
                 .orElseGet(() -> ResponseEntity.notFound().build()); // If not found, return 404
     }
 
-
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteDocument(@PathVariable("id") Long id) {
-        documentService.deleteDocument(id);
-        return ResponseEntity.noContent().build();
-    }
-
     
+    // Helps users know which files exist before downloading
     @GetMapping("/download/{id}")
     public ResponseEntity<byte[]> downloadDocument(@PathVariable("id") Long id) throws IOException {
     	Document document = documentService.getDocumentById(id)
@@ -89,26 +92,34 @@ public class DocumentController {
     }
 
     
-    @GetMapping
-    public ResponseEntity<List<Map<String, Object>>> getAllDocuments() {
-        List<Document> documents = documentService.getAllDocuments();
+    @GetMapping("/list")
+    public ResponseEntity<?> getUserDocuments(@RequestParam("userId") Long userId) {
+        List<Document> documents = documentService.getAllDocuments()
+                .stream()
+                .filter(doc -> doc.getOwner() != null && doc.getOwner().getId().equals(userId))
+                .collect(Collectors.toList());
 
-        //Return only metadata, not binary data
+        if (documents.isEmpty()) {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
+
+
         List<Map<String, Object>> metadataList = documents.stream().map(doc -> {
             Map<String, Object> map = new HashMap<>();
             map.put("id", doc.getId());
             map.put("name", doc.getName());
             map.put("type", doc.getType());
+            
+            if (doc.getOwner() != null) {
+                Map<String, Object> ownerMap = new HashMap<>();
+                ownerMap.put("id", doc.getOwner().getId());
+                ownerMap.put("username", doc.getOwner().getUsername());
+                map.put("owner", ownerMap);
+            }
             return map;
         }).collect(Collectors.toList());
 
         return ResponseEntity.ok(metadataList);
-    }
-
-    // Helps users know which files exist before downloading
-    @GetMapping("/list")
-    public ResponseEntity<List<Document>> listDocuments() {
-        return ResponseEntity.ok(documentService.getAllDocuments());
     }
 
     @GetMapping("/extracted-text/{id}")
@@ -119,7 +130,7 @@ public class DocumentController {
     }
     
     @PostMapping("/upload/bulk")
-    public ResponseEntity<Map<String, Object>> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files) {
+    public ResponseEntity<Map<String, Object>> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files,  @AuthenticationPrincipal User user, UserRepository userRepository ) {
         List<String> success = new ArrayList<>();
         List<String> failed = new ArrayList<>();
 
@@ -127,7 +138,7 @@ public class DocumentController {
             try {
                 String name = file.getOriginalFilename();
                 String type = file.getContentType();
-                documentService.saveDocument(file, name, type);
+                documentService.saveDocument(file, name, type, user);
                 success.add(name);
             } catch (Exception e) {
                 failed.add(file.getOriginalFilename() + " - " + e.getMessage());
@@ -160,9 +171,31 @@ public class DocumentController {
 	 * .contentType(MediaType.APPLICATION_OCTET_STREAM) .body(baos.toByteArray()); }
 	 */
     @GetMapping("/search")
-    public ResponseEntity<List<DocumentMetadata>> searchDocuments(@RequestParam("q") String query) {
-        List<DocumentMetadata> results = documentService.searchDocuments(query);
+    public ResponseEntity<?> searchDocuments(
+            @RequestParam("q") String q,
+            @RequestParam("userId") Long userId) {
+        
+        List<DocumentMetadata> results = documentService.searchDocuments(q, userId);
+
+        if (results.isEmpty()) {
+            return ResponseEntity.ok("No results found.");
+        }
+
         return ResponseEntity.ok(results);
+    }
+
+
+
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> deleteDocument(@PathVariable("id") Long id, @RequestParam("userId") Long userId) {
+    	 	User user = userRepository.findById(userId).orElse(null);
+    		if (user == null) {
+    			user = userRepository.findByUsername("testuser"); // fallback
+    		}
+
+    		documentService.deleteDocument(id, user);
+    		return ResponseEntity.noContent().build();
     }
 
 

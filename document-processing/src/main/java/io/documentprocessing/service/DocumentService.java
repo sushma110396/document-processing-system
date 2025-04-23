@@ -12,8 +12,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import io.documentprocessing.model.Document;
 import io.documentprocessing.model.DocumentMetadata;
+import io.documentprocessing.model.User;
 import io.documentprocessing.repository.DocumentMetadataRepository;
 import io.documentprocessing.repository.DocumentRepository;
+import io.documentprocessing.repository.UserRepository;
 
 @Service
 public class DocumentService {
@@ -22,19 +24,21 @@ public class DocumentService {
     private final DocumentMetadataRepository documentMetadataRepository;
     private final TextExtractionService textExtractionService;
     private final S3StorageService s3StorageService;
+    //private final UserRepository userRepository;
 
     @Autowired
     public DocumentService(DocumentRepository documentRepository, DocumentMetadataRepository documentMetadataRepository, 
-    		TextExtractionService textExtractionService, S3StorageService s3StorageService ) {
+    		TextExtractionService textExtractionService, S3StorageService s3StorageService) {
         this.documentRepository = documentRepository;
         this.documentMetadataRepository = documentMetadataRepository;
         this.textExtractionService = textExtractionService;
         this.s3StorageService = s3StorageService;
+        //this.userRepository = userRepository;
     }
 
 	
     
-    public Document saveDocument(MultipartFile file, String name, String type) throws IOException {
+    public Document saveDocument(MultipartFile file, String name, String type, User currentUser) throws IOException {
         if (file.isEmpty()) {
             throw new IOException("File is empty.");
         }
@@ -52,6 +56,8 @@ public class DocumentService {
         document.setName(file.getOriginalFilename()); // Use actual filename
         document.setType(type);
         document.setS3Key(s3Key);
+     // For testing purposes, hard-code a user for now:
+        document.setOwner(currentUser);
         Document savedDocument = documentRepository.save(document);
 
         // Save metadata
@@ -79,9 +85,17 @@ public class DocumentService {
     }
 
 
-    public void deleteDocument(Long id) {
-        documentRepository.deleteById(id);
+    public void deleteDocument(Long id, User currentUser) {
+        Document document = documentRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Document not found"));
+
+        if (!document.getOwner().getId().equals(currentUser.getId())) {
+            throw new SecurityException("You are not authorized to delete this document.");
+        }
+
+        documentRepository.delete(document);
     }
+
     
     //Download doc from S3 service
     public byte[] downloadDocument(Long id) throws IOException {
@@ -90,8 +104,8 @@ public class DocumentService {
         return s3StorageService.downloadFile(doc.getS3Key());
     }
     
-    public List<DocumentMetadata> searchDocuments(String query) {
-        return documentMetadataRepository.searchByNameOrText(query);
+    public List<DocumentMetadata> searchDocuments(String query, Long userId) {
+        return documentMetadataRepository.searchByNameOrText(query, userId);
     }
 
 

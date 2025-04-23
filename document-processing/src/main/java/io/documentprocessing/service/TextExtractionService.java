@@ -3,7 +3,7 @@ package io.documentprocessing.service;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 
-import org.apache.tika.Tika;
+
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.ParseContext;
@@ -21,7 +21,7 @@ import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 @Service
 public class TextExtractionService {
 
-    private final Tika tika = new Tika();
+
     private final DocumentMetadataRepository metadataRepository;
     private final S3Client s3Client;
 

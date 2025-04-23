@@ -1,5 +1,7 @@
 package io.documentprocessing.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,7 +11,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User{
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,10 +23,19 @@ public class User {
 	@Column(nullable = false, length = 100, unique = true)
 	private String email;
 
+	/* Password field should not be included in the json response-So use json ignore */
+	@JsonIgnore    
 	@Column(nullable = false, length = 255)
 	private String password;
 
+	public Long getId() {
+		return id;
+	}
 
+	public void setId(Long id) {
+		this.id = id;
+	}
+	
 	public String getUsername() {
 		return username;
 	}
@@ -47,5 +58,6 @@ public class User {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+
 
 }

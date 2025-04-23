@@ -25,8 +25,11 @@ public interface DocumentMetadataRepository extends JpaRepository<DocumentMetada
     // Search in both document name and extracted text
     @Query("SELECT m FROM DocumentMetadata m " +
     	       "JOIN m.document d " +
-    	       "WHERE LOWER(d.name) LIKE LOWER(CONCAT('%', :query, '%')) " +
-    	       "OR LOWER(m.extractedText) LIKE LOWER(CONCAT('%', :query, '%'))")
-    	List<DocumentMetadata> searchByNameOrText(@Param("query") String query);
+    	       "WHERE d.owner.id = :userId AND " +
+    	       "(LOWER(d.name) LIKE LOWER(CONCAT('%', :query, '%')) " +
+    	       "OR LOWER(m.extractedText) LIKE LOWER(CONCAT('%', :query, '%')))")
+    	List<DocumentMetadata> searchByNameOrText(@Param("query") String query, @Param("userId") Long userId);
+
+
 
 }
