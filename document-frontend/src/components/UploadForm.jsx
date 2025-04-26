@@ -47,3 +47,5 @@ const UploadForm = ({ user, onUploadSuccess }) => {
         </div>
     );
 };
+
+export default UploadForm;

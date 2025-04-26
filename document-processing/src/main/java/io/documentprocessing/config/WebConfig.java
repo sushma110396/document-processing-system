@@ -1,4 +1,4 @@
-package io.documentprocessing;
+package io.documentprocessing.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,18 +23,25 @@ public class DocumentService {
 
     private final DocumentRepository documentRepository;
     private final DocumentMetadataRepository documentMetadataRepository;
+    
+    //For docx or txt files text extraction
     private final TextExtractionService textExtractionService;
+    
+    //For pdf, jpeg and png files text extraction
+    private final LambdaService lambdaService;
     private final S3StorageService s3StorageService;
-    //private final UserRepository userRepository;
 
+    @Value("${aws.s3.bucket}")
+    private String bucket;
+    
     @Autowired
     public DocumentService(DocumentRepository documentRepository, DocumentMetadataRepository documentMetadataRepository, 
-    		TextExtractionService textExtractionService, S3StorageService s3StorageService) {
+    		LambdaService lambdaService, S3StorageService s3StorageService, TextExtractionService textExtractionService) {
         this.documentRepository = documentRepository;
         this.documentMetadataRepository = documentMetadataRepository;
-        this.textExtractionService = textExtractionService;
+        this.lambdaService = lambdaService;
         this.s3StorageService = s3StorageService;
-        //this.userRepository = userRepository;
+        this.textExtractionService = textExtractionService;
     }
 
 	
@@ -53,10 +61,9 @@ public class DocumentService {
 
         // Save document info to DB
         Document document = new Document();
-        document.setName(file.getOriginalFilename()); // Use actual filename
+        document.setName(file.getOriginalFilename()); 
         document.setType(type);
         document.setS3Key(s3Key);
-     // For testing purposes, hard-code a user for now:
         document.setOwner(currentUser);
         Document savedDocument = documentRepository.save(document);
 
@@ -67,8 +74,13 @@ public class DocumentService {
         metadata.setUploadTimestamp(LocalDateTime.now());
         documentMetadataRepository.save(metadata);
 
-        // Trigger text extraction asynchronously
-        textExtractionService.processDocument(savedDocument, metadata);
+        // Trigger text extraction asynchronously        
+        if (type.equals("application/pdf") || type.equals("image/png") || type.equals("image/jpeg")) {
+        	String lambdaResult = lambdaService.triggerTextExtraction(bucket, s3Key, metadata);
+        	System.out.println("Lambda response: " + lambdaResult);
+        } else {
+        	textExtractionService.processDocument(savedDocument, metadata); 
+        }
 
         return savedDocument;
     }
