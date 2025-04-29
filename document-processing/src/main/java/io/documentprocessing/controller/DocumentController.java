@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,13 +20,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
 import io.documentprocessing.model.Document;
 import io.documentprocessing.model.DocumentMetadata;
 import io.documentprocessing.model.User;
 import io.documentprocessing.repository.DocumentMetadataRepository;
 import io.documentprocessing.repository.UserRepository;
 import io.documentprocessing.service.DocumentService;
+
 
 @RestController
 @RequestMapping("/documents")
@@ -36,35 +36,43 @@ public class DocumentController {
     private final DocumentMetadataRepository metadataRepository;
     private final UserRepository userRepository;
 
-    public DocumentController(DocumentService documentService, DocumentMetadataRepository metadataRepository, UserRepository userRepository ) {
+    
+    @Value("${aws.s3.bucket}")
+    private String bucketName;
+    
+    private static final long MULTIPART_UPLOAD_THRESHOLD = 100L * 1024 * 1024; //100MB limit
+
+    public DocumentController(DocumentService documentService, DocumentMetadataRepository metadataRepository, UserRepository userRepository) {
         this.documentService = documentService;
         this.metadataRepository = metadataRepository;
         this.userRepository = userRepository;
     }
     
     @PostMapping("/upload")
-    public ResponseEntity<Document> uploadDocument(
-            @RequestParam("file") MultipartFile file,
-            @RequestParam("name") String name,
-            @RequestParam("type") String type,
-            @RequestParam("userId") Long userId) throws IOException {
+    public ResponseEntity<Document> uploadDocument(@RequestParam("file") MultipartFile file,@RequestParam("name") String name,
+    		@RequestParam("type") String type,@RequestParam("userId") Long userId) throws IOException {
 
     	 if (file.isEmpty()) {
-    	        throw new IllegalArgumentException("File cannot be empty.");
-    	    }
+    		 throw new IllegalArgumentException("File cannot be empty.");
+    	 }
 
-    	    if (file.getSize() > 5_000_000) { // Limit: 5MB
-    	        throw new IllegalArgumentException("File size exceeds the limit (5MB).");
-    	    }
+    	 User user = userRepository.findById(userId).orElse(null);
 
-    	    /*if (!type.equals("application/pdf") && !type.equals("application/msword")) {
-    	        throw new IllegalArgumentException("Only PDF and Word documents are allowed.");
-    	    }*/
+    	 if (user == null) {
+    		 throw new IllegalArgumentException("Invalid user ID.");
+    	 }
+    	    
+    	 Document savedDocument;
 
-    	    User user = userRepository.findById(userId).orElse(null);
+    	 if (file.getSize() > MULTIPART_UPLOAD_THRESHOLD) { // Limit: 100MB
+    	        // Multipart upload for large file
+    	    savedDocument = documentService.saveLargeDocument(file, name, type, user);
+    	 } else {
+    	        // Simple upload for small file
+    	    savedDocument = documentService.saveDocument(file, name, type, user);
+    	  }
 
-    	    Document savedDocument = documentService.saveDocument(file, name, type, user);
-    	    return ResponseEntity.ok(savedDocument);
+    	  return ResponseEntity.ok(savedDocument);
     }
 
     @GetMapping("/{id}")
@@ -72,8 +80,8 @@ public class DocumentController {
         System.out.println("Fetching document with ID: " + id);
 
         return documentService.getDocumentById(id)
-                .map(ResponseEntity::ok) // If present, return 200 OK
-                .orElseGet(() -> ResponseEntity.notFound().build()); // If not found, return 404
+                .map(ResponseEntity::ok) 
+                .orElseGet(() -> ResponseEntity.notFound().build()); 
     }
 
     
@@ -191,12 +199,14 @@ public class DocumentController {
     public ResponseEntity<Void> deleteDocument(@PathVariable("id") Long id, @RequestParam("userId") Long userId) {
     	 	User user = userRepository.findById(userId).orElse(null);
     		if (user == null) {
-    			user = userRepository.findByUsername("testuser"); // fallback
+    			user = userRepository.findByUsername("testuser"); 
     		}
 
     		documentService.deleteDocument(id, user);
     		return ResponseEntity.noContent().build();
     }
 
-
+    
 }
+
+

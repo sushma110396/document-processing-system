@@ -29,7 +29,7 @@ public class Document {
 	 * @Column(columnDefinition = "BYTEA") private byte[] data;
 	 */
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = true) // Create a new column named `user_id` in documents
+    @JoinColumn(name = "user_id", nullable = true) 
     private User owner;
 
 

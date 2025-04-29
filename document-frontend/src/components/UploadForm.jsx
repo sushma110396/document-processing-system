@@ -17,6 +17,11 @@ const UploadForm = ({ user, onUploadSuccess }) => {
             return;
         }
 
+        if (file.size > 200 * 1024 * 1024) { // 200 MB limit on frontend
+            setStatus('File size exceeds 200MB. Please upload a smaller file.');
+            return;
+        }
+
         const formData = new FormData();
         formData.append('file', file);
         formData.append('name', file.name);
