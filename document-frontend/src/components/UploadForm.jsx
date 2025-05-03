@@ -1,23 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import './css/UploadForm.css';
 
-
-const UploadForm = ({ user, onUploadSuccess }) => {
+const UploadForm = ({ user, onUploadSuccess, visible, onClose }) => {
     const [file, setFile] = useState(null);
     const [status, setStatus] = useState('');
+    const [uploading, setUploading] = useState(false);
+
+    useEffect(() => {
+        if (visible) {
+            setStatus('');
+            setFile(null);
+        }
+    }, [visible]);
 
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
+        setStatus('');
     };
 
     const handleUpload = async (e) => {
         e.preventDefault();
+
         if (!file) {
             setStatus('Please select a file');
             return;
         }
 
-        if (file.size > 200 * 1024 * 1024) { // 200 MB limit on frontend
+        if (file.size > 200 * 1024 * 1024) {
             setStatus('File size exceeds 200MB. Please upload a smaller file.');
             return;
         }
@@ -26,29 +36,43 @@ const UploadForm = ({ user, onUploadSuccess }) => {
         formData.append('file', file);
         formData.append('name', file.name);
         formData.append('type', file.type);
-        formData.append("userId", user.userId);
+        formData.append('userId', user.userId);
 
         try {
+            setUploading(true);
             await axios.post('http://localhost:9090/documents/upload', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
             setStatus('Upload successful!');
-            onUploadSuccess(); // refresh document list
-            setFile(null);     // clear the input
+            setFile(null);
+            onUploadSuccess(); // refresh doc list
         } catch (error) {
             console.error('Upload failed:', error);
             setStatus('Upload failed');
+        } finally {
+            setUploading(false);
         }
     };
 
+    if (!visible) return null;
+
     return (
-        <div className="upload-container">
-            <h2>Upload Document</h2>
-            <form onSubmit={handleUpload} className="upload-form">
-                <input type="file" onChange={handleFileChange} />
-                <button type="submit">Upload</button>
-            </form>
-            <p className="status-text">{status}</p>
+        <div className="upload-modal">
+            <div className="upload-box">
+                <h3 className="modal-title">Upload Document</h3>
+                <form onSubmit={handleUpload} className="upload-form">
+                    <input type="file" onChange={handleFileChange} className="upload-file" />
+                    <div className="upload-buttons">
+                        <button type="submit" disabled={uploading} id="submit">
+                            {uploading ? 'Uploading...' : 'Upload'}
+                        </button>
+                        <button type="button" className="cancel-btn" onClick={onClose}>
+                            {status === 'Upload successful!' ? 'Close' : 'Cancel'}
+                        </button>
+                    </div>
+                </form>
+                {status && <p className="status-text">{status}</p>}
+            </div>
         </div>
     );
 };

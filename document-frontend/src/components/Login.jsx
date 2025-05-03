@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import './css/Login.css';
 
 const Login = ({ onLogin }) => {
     const [isLoginMode, setIsLoginMode] = useState(true);
@@ -35,37 +36,22 @@ const Login = ({ onLogin }) => {
     };
 
     return (
-        <div>
-            <h2>{isLoginMode ? "Login" : "Register"}</h2>
-            <input
-                type="text"
-                placeholder="Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-            />
+        <div className="login">
+            <h2 className="login-mode">{isLoginMode ? "Login" : "Register"}</h2>
+            <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} className="username"/>
             {!isLoginMode && (
-                <input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                />
+                <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="email"/>
             )}
-            <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-            />
-
-            {isLoginMode ? (
-                <button onClick={handleLogin}>Login</button>
-            ) : (
-                <button onClick={handleRegister}>Register</button>
-            )}
-
+            <div className="form-group">
+                <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="password"/>
+                {isLoginMode ? (
+                    <button onClick={handleLogin}>Login</button>
+                ) : (
+                    <button onClick={handleRegister}>Register</button>
+                )}
+            </div>
             <br />
-            <button onClick={() => setIsLoginMode(!isLoginMode)}>
+            <button id="login" onClick={() => setIsLoginMode(!isLoginMode)}>
                 {isLoginMode ? "Need an account? Register" : "Have an account? Login"}
             </button>
         </div>

@@ -1,7 +1,8 @@
 import React from "react";
 import axios from "axios";
+import './css/UserDocuments.css';
 
-const DocumentList = ({ user, documents, onDocumentDelete }) => {
+const UserDocuments = ({ user, documents, onDocumentDelete }) => {
     // Handle file download
     const handleDownload = async (id, name, type) => {
         try {
@@ -39,16 +40,15 @@ const DocumentList = ({ user, documents, onDocumentDelete }) => {
     };
 
     return (
-        <div>
-            <h2>My Documents</h2>
-            <ul>
+        <div className="user-documents">
+            <ul className="documents-list">
                 {documents.map((doc) => (
                     <li key={doc.id}>
-                        {doc.name} ({doc.type}){" "}
-                        <button onClick={() => handleDownload(doc.id, doc.name, doc.type)}>
-                            Download
-                        </button>{" "}
-                        <button onClick={() => handleDelete(doc.id)}>Delete</button>
+                        <span>{doc.name}</span>
+                        <div className="doc-actions">
+                            <button id="download" onClick={() => handleDownload(doc.id, doc.name, doc.type)}>Download</button>{" "}
+                            <button id="delete" onClick={() => handleDelete(doc.id)}>Delete</button>
+                        </div>
                     </li>
                 ))}
             </ul>
@@ -56,4 +56,4 @@ const DocumentList = ({ user, documents, onDocumentDelete }) => {
     );
 };
 
-export default DocumentList;
+export default UserDocuments;

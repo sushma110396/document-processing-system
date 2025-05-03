@@ -40,7 +40,7 @@ public class DocumentController {
     @Value("${aws.s3.bucket}")
     private String bucketName;
     
-    private static final long MULTIPART_UPLOAD_THRESHOLD = 100L * 1024 * 1024; //100MB limit
+    private static final long MULTIPART_UPLOAD_THRESHOLD = 10L * 1024 * 1024; //100MB limit-(Change to 100mb later)
 
     public DocumentController(DocumentService documentService, DocumentMetadataRepository metadataRepository, UserRepository userRepository) {
         this.documentService = documentService;

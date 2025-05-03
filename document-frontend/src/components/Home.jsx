@@ -1,24 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import UploadForm from './UploadForm';
-import DocumentList from './DocumentList';
 import SearchDocument from './SearchDocument';
 import axios from 'axios';
-
+import UserDocuments from './UserDocuments';
+import './css/Home.css';
 
 const Home = ({ user, onLogout }) => {
     const [documents, setDocuments] = useState([]);
+    const [showUpload, setShowUpload] = useState(false);
 
-    // Fetch user documents
     const fetchDocuments = async () => {
         try {
             const response = await axios.get('http://localhost:9090/documents/list', {
                 params: { userId: user.userId },
             });
-            if (Array.isArray(response.data)) {
-                setDocuments(response.data);
-            } else {
-                setDocuments([]);
-            }
+            setDocuments(Array.isArray(response.data) ? response.data : []);
         } catch (error) {
             console.error("Failed to fetch documents:", error);
         }
@@ -29,13 +25,28 @@ const Home = ({ user, onLogout }) => {
     }, []);
 
     return (
-        <div>
-            <h1>Document Processing System</h1>
-            <p>Welcome, {user.username}!</p>
-            <button onClick={onLogout}>Logout</button>
-            <UploadForm user={user} onUploadSuccess={fetchDocuments} />
-            <DocumentList user={user} documents={documents} onDocumentDelete={fetchDocuments} />
-            <SearchDocument user={user} />
+        <div className="home-page">
+            <div className="header-wrapper">
+                <div className="logout-container">
+                    <button className="logout-button" onClick={onLogout}>Logout</button>
+                </div>
+                <p className="welcome-message">Welcome, {user.username}!</p>
+            </div>
+
+            <h2 className="page-title">Documents</h2>
+            <div className="search-upload-bar">
+                <SearchDocument user={user} />
+                <button className="upload-button" onClick={() => setShowUpload(true)}>+ New Document</button>
+            </div>
+
+            <div className="document-wrapper">
+                <div className="document-section">
+                <UserDocuments user={user} documents={documents} onDocumentDelete={fetchDocuments} />
+                </div>
+            </div>
+
+            <UploadForm user={user} onUploadSuccess={fetchDocuments} visible={showUpload} onClose={() => setShowUpload(false)} />
+
         </div>
     );
 };

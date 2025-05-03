@@ -45,6 +45,7 @@ dependencies {
 	implementation 'software.amazon.awssdk:lambda'
 	implementation 'org.json:json:20240303'
 	implementation 'software.amazon.awssdk:s3' // AWS S3 SDK
+	implementation 'org.apache.pdfbox:pdfbox:2.0.29'
 }
 
 tasks.named('test') {
