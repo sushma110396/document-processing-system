@@ -24,6 +24,23 @@ const Home = ({ user, onLogout }) => {
         fetchDocuments();
     }, []);
 
+    const handleTempUpload = (tempDoc) => {
+        setDocuments((prev) => [tempDoc, ...prev]);
+    };
+
+    const handleUploadSuccess = (tempId) => {
+        setDocuments((prev) =>
+            prev.map((doc) =>
+                doc.tempId === tempId ? { ...doc, status: 'uploaded' } : doc
+            )
+        );
+
+        // Delay refresh so  is visible
+        setTimeout(() => {
+            fetchDocuments(); // replace temp with real document info
+        }, 3000); // 1.5 seconds delay
+    };
+
     return (
         <div className="home-page">
             <div className="header-wrapper">
@@ -41,12 +58,17 @@ const Home = ({ user, onLogout }) => {
 
             <div className="document-wrapper">
                 <div className="document-section">
-                <UserDocuments user={user} documents={documents} onDocumentDelete={fetchDocuments} />
+                    <UserDocuments user={user} documents={documents} onDocumentDelete={fetchDocuments} />
                 </div>
             </div>
 
-            <UploadForm user={user} onUploadSuccess={fetchDocuments} visible={showUpload} onClose={() => setShowUpload(false)} />
-
+            <UploadForm
+                user={user}
+                visible={showUpload}
+                onClose={() => setShowUpload(false)}
+                onTempUpload={handleTempUpload}
+                onUploadSuccess={handleUploadSuccess}
+            />
         </div>
     );
 };

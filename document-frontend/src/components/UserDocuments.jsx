@@ -1,8 +1,12 @@
 import React from "react";
 import axios from "axios";
 import './css/UserDocuments.css';
+import { useNavigate } from "react-router-dom";
 
 const UserDocuments = ({ user, documents, onDocumentDelete }) => {
+    const [viewedText, setViewedText] = React.useState(null);
+    const navigate = useNavigate(); 
+
     // Handle file download
     const handleDownload = async (id, name, type) => {
         try {
@@ -39,15 +43,23 @@ const UserDocuments = ({ user, documents, onDocumentDelete }) => {
         }
     };
 
+    // Navigate to view page
+    const handleView = (docId) => {
+        navigate(`/view/${docId}`);
+    };
+
     return (
         <div className="user-documents">
             <ul className="documents-list">
                 {documents.map((doc) => (
                     <li key={doc.id}>
                         <span>{doc.name}</span>
+                        {doc.status === 'uploading' && <span className="doc-status uploading">Uploading...</span>}
+                        {doc.status === 'uploaded' && <span className="doc-status success">{'\u2713'}</span>}
                         <div className="doc-actions">
                             <button id="download" onClick={() => handleDownload(doc.id, doc.name, doc.type)}>Download</button>{" "}
                             <button id="delete" onClick={() => handleDelete(doc.id)}>Delete</button>
+                            <button id="view" onClick={() => handleView(doc.id)} disabled={!doc.id}>View</button>
                         </div>
                     </li>
                 ))}

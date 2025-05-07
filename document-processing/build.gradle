@@ -46,6 +46,21 @@ dependencies {
 	implementation 'org.json:json:20240303'
 	implementation 'software.amazon.awssdk:s3' // AWS S3 SDK
 	implementation 'org.apache.pdfbox:pdfbox:2.0.29'
+	
+	// Core Lucene library
+    implementation 'org.apache.lucene:lucene-core:9.9.2'
+
+    // Analyzer for English and other languages (standard text processing)
+    implementation 'org.apache.lucene:lucene-analyzers-common:8.11.1'
+
+    // Query parsing support (for flexible queries like "term~")
+    implementation 'org.apache.lucene:lucene-queryparser:9.9.2'
+
+    // Optional: highlighter support if you want to highlight matched terms
+    implementation 'org.apache.lucene:lucene-highlighter:9.9.2'
+
+    // Optional: monitor file system changes
+    implementation 'org.apache.lucene:lucene-monitor:9.9.2'
 }
 
 tasks.named('test') {

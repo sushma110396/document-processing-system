@@ -14,6 +14,8 @@ const Login = ({ onLogin }) => {
                 username,
                 password,
             });
+            // Save user in sessionStorage for future use
+            sessionStorage.setItem("user", JSON.stringify(response.data));
             alert("Login successful");
             onLogin(response.data); // Pass user info to parent
         } catch (err) {

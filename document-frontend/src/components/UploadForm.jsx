@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './css/UploadForm.css';
 
-const UploadForm = ({ user, onUploadSuccess, visible, onClose }) => {
+const UploadForm = ({ user, onUploadSuccess, visible, onClose, onTempUpload }) => {
     const [file, setFile] = useState(null);
     const [status, setStatus] = useState('');
     const [uploading, setUploading] = useState(false);
@@ -32,6 +32,10 @@ const UploadForm = ({ user, onUploadSuccess, visible, onClose }) => {
             return;
         }
 
+        const tempId = Date.now();
+        onTempUpload({ tempId, name: file.name, status: 'uploading' });
+        onClose(); // close immediately
+
         const formData = new FormData();
         formData.append('file', file);
         formData.append('name', file.name);
@@ -43,12 +47,10 @@ const UploadForm = ({ user, onUploadSuccess, visible, onClose }) => {
             await axios.post('http://localhost:9090/documents/upload', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
-            setStatus('Upload successful!');
-            setFile(null);
-            onUploadSuccess(); // refresh doc list
+            onUploadSuccess(tempId); // update status to 'uploaded'
         } catch (error) {
             console.error('Upload failed:', error);
-            setStatus('Upload failed');
+            alert('Upload failed');
         } finally {
             setUploading(false);
         }
@@ -67,7 +69,7 @@ const UploadForm = ({ user, onUploadSuccess, visible, onClose }) => {
                             {uploading ? 'Uploading...' : 'Upload'}
                         </button>
                         <button type="button" className="cancel-btn" onClick={onClose}>
-                            {status === 'Upload successful!' ? 'Close' : 'Cancel'}
+                            Cancel
                         </button>
                     </div>
                 </form>

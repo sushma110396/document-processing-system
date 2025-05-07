@@ -1,5 +1,6 @@
 package io.documentprocessing.service;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 
@@ -21,10 +22,12 @@ public class LambdaService {
 
     private final LambdaClient lambdaClient;
     private final DocumentMetadataRepository documentMetadataRepository;
+    private final LuceneService luceneService;
     
-    public LambdaService(DocumentMetadataRepository documentMetadataRepository, LambdaClient lambdaClient) {
+    public LambdaService(DocumentMetadataRepository documentMetadataRepository, LambdaClient lambdaClient, LuceneService luceneService) {
     	this.documentMetadataRepository = documentMetadataRepository;
     	this.lambdaClient = lambdaClient;
+    	this.luceneService = luceneService;
     }
 
     @Value("${aws.lambda.functionName}")
@@ -65,6 +68,20 @@ public class LambdaService {
             metadata.setStatus("Processed");
 
             documentMetadataRepository.save(metadata);
+            
+         // Index in Lucene now that extractedText is available
+            try {
+                luceneService.indexDocument(
+                    metadata.getDocument().getId().toString(),
+                    metadata.getDocument().getName(),
+                    metadata.getDocument().getType(),
+                    extractedText,
+                    metadata.getDocument().getOwner().getId().toString()
+                );
+                System.out.println("Indexed into Lucene: " + extractedText);
+            } catch (IOException e) {
+                System.err.println("Failed to index in Lucene: " + e.getMessage());
+            }
 
             return extractedText;
 
