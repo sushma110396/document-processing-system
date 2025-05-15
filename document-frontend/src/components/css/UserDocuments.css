@@ -71,4 +71,16 @@
     background-color: #005ea3;
 }
 
+#view {
+    margin-left: 10px;
+    padding: 6px 12px;
+    background-color: #0074cc;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
 
+#view:hover {
+    background-color: #005ea3;
+}
