@@ -82,3 +82,38 @@
 #login:hover {
     background-color: #005fa3;
 }
+
+.toast {
+    position: absolute;
+    top: -80px; /* Position above the login box */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #009688; /*  Deep Teal */
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    white-space: nowrap; /* prevent wrapping */
+    min-width: 300px;
+    animation: fadeIn 0.3s ease-out;
+    z-index: 10;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+

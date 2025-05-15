@@ -1,46 +1,68 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './css/SearchDocument.css';
 
-const SearchDocument = ({ user }) => {
-    const [query, setQuery] = useState("");
-    const [status, setStatus] = useState("");
+const SearchDocument = ({ user, selectedType, setSelectedType }) => {
+    const [query, setQuery] = useState('');
+    const [dropdownOpen, setDropdownOpen] = useState(false);
     const navigate = useNavigate();
+
+    const types = ["all", "pdf", "docx", "xlsx", "image"];
 
     const handleSearch = (e) => {
         e.preventDefault();
-
-        if (!query.trim()) {
-            setStatus("Please enter a search term.");
-            return;
-        }
-
-        // Navigate to search-results page with query string
-        navigate(`/search-results?q=${encodeURIComponent(query.trim())}`);
+        const encodedQuery = encodeURIComponent(query);
+        const encodedType = encodeURIComponent(selectedType);
+        const url = `/search-results?q=${encodedQuery}&userId=${user.userId}&type=${encodedType}`;
+        navigate(url);
     };
 
-    const handleClear = () => {
-        setQuery('');
-        setStatus('');
+    const toggleDropdown = () => {
+        setDropdownOpen(!dropdownOpen);
+    };
+
+    const handleTypeSelect = (type) => {
+        setSelectedType(type);
+        setDropdownOpen(false);
     };
 
     return (
-        <div className="search-documents">
-            <form onSubmit={handleSearch} className="search-form">
-                <div className="search-bar-wrapper">
-                    <input
-                        type="text"
-                        placeholder="Enter keyword to search for a document..."
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                        className="search-input"
-                    />
-                    <button id="search" type="submit">Search</button>
-                </div>
-            </form>
+        <form onSubmit={handleSearch} className="search-bar-container">
+            <div className="search-bar">
+                <div className="custom-dropdown" onClick={toggleDropdown}>
+                    <div className="dropdown-selected">{selectedType.toUpperCase()} <span className={`dropdown-icon ${dropdownOpen ? 'open' : ''}`}>&#9660;</span></div>
+                    {dropdownOpen && (
+                        <ul className="dropdown-options">
+                            {types.map((type) => (
+                                <li
+                                    key={type}
+                                    className={`dropdown-option${type === selectedType ? ' selected' : ''}`}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleTypeSelect(type);
+                                    }}
+                                >
+                                    {type.toUpperCase()}
+                                </li>
 
-            <p className="status-text">{status}</p>
-        </div>
+                            ))}
+                        </ul>
+                    )}
+                </div>
+
+                <input
+                    type="text"
+                    placeholder="Search documents..."
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    className="search-input-combined"
+                />
+
+                <button type="submit" className="search-button-combined">
+                    Search
+                </button>
+            </div>
+        </form>
     );
 };
 

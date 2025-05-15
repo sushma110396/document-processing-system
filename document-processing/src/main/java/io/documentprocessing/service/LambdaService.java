@@ -48,21 +48,21 @@ public class LambdaService {
         System.out.println("Lambda raw response: " + responseJson);
 
         try {
-            // Step 1: Parse outer JSON
+            //Parse outer JSON
             JSONObject root = new JSONObject(responseJson);
 
-            // Step 2: Get and parse the nested "body" string as JSON
+            //Get and parse the nested "body" string as JSON
             String bodyString = root.getString("body");
             JSONObject body = new JSONObject(bodyString);
 
-            // Step 3: Get the actual extractedText
+            //Get the actual extractedText
             if (!body.has("extractedText")) {
                 throw new RuntimeException("Lambda did not return extractedText: " + responseJson);
             }
 
             String extractedText = body.getString("extractedText");
 
-            // Step 4: Save to metadata
+            //Save to metadata
             metadata.setExtractedText(extractedText);
             metadata.setProcessedAt(LocalDateTime.now());
             metadata.setStatus("Processed");

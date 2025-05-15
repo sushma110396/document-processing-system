@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
-import './css/SearchDocument.css';
+import './css/SearchResults.css';
 
 const SearchResults = ({ user }) => {
     const location = useLocation();
@@ -45,7 +45,7 @@ const SearchResults = ({ user }) => {
     }, [query, user.userId]);
 
     return (
-        <div className="search-documents">
+        <div className="search-results-container">
             <h2>Search Results for "{query}"</h2>
 
             {loading ? (
@@ -53,21 +53,21 @@ const SearchResults = ({ user }) => {
             ) : (
                 <>
                     <p className="status-text">{status}</p>
-                        <ul className="search-result">
-                            {results.map((result) => (
-                                <li key={result.id}>
-                                    <strong>{result.name}</strong> ({result.type})
-                                    <br />
-                                    <em>Preview:</em> {result.preview?.substring(0, 100)}...
-                                </li>
-                            ))}
-                        </ul>
-
+                    <ul className="search-result-list">
+                        {results.map((result) => (
+                            <li key={result.id}>
+                                <strong>{result.name}</strong>
+                                <br />
+                                {result.preview?.substring(0, 100)}...
+                            </li>
+                        ))}
+                    </ul>
                 </>
             )}
 
-            <button onClick={() => navigate('/')} className="back-button"> Back to Home</button>
+            <button onClick={() => navigate('/')} className="back-button">Back to Home</button>
         </div>
+
     );
 };
 

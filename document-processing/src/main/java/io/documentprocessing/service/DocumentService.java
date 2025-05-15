@@ -10,6 +10,9 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,6 +41,7 @@ public class DocumentService {
     
     //For pdf, jpeg and png files text extraction
     private final LambdaService lambdaService;
+    private final LuceneService luceneService;
     private final S3StorageService s3StorageService;
     private final S3Client s3Client;
 
@@ -46,10 +50,12 @@ public class DocumentService {
     
     @Autowired
     public DocumentService(DocumentRepository documentRepository, DocumentMetadataRepository documentMetadataRepository, 
-    		LambdaService lambdaService, S3StorageService s3StorageService, TextExtractionService textExtractionService, S3Client s3Client) {
+    		LambdaService lambdaService, S3StorageService s3StorageService, TextExtractionService textExtractionService, S3Client s3Client, 
+    		LuceneService luceneService) {
         this.documentRepository = documentRepository;
         this.documentMetadataRepository = documentMetadataRepository;
         this.lambdaService = lambdaService;
+        this.luceneService = luceneService;
         this.s3StorageService = s3StorageService;
         this.textExtractionService = textExtractionService;
         this.s3Client = s3Client;
@@ -92,6 +98,15 @@ public class DocumentService {
         } else {
         	textExtractionService.processDocument(savedDocument, metadata); 
         }
+        
+        luceneService.indexDocument(
+        	    savedDocument.getId().toString(),
+        	    savedDocument.getName(),
+        	    savedDocument.getType(),
+        	    metadata.getExtractedText(),  // or whatever field holds text
+        	    currentUser.getId().toString()
+        	);
+
 
         return savedDocument;
     }
@@ -138,6 +153,11 @@ public class DocumentService {
 
     public Optional<Document> getDocumentById(Long id) {
         return documentRepository.findById(id);
+    }
+    
+    public Page<Document> getDocumentsByUserIdPaginated(Long userId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("uploadTime").descending());
+        return documentRepository.findByOwnerId(userId, pageable);
     }
 
 

@@ -7,6 +7,8 @@ const Login = ({ onLogin }) => {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState(""); // Only used during registration
     const [password, setPassword] = useState("");
+    const [toastMessage, setToastMessage] = useState("");
+
 
     const handleLogin = async () => {
         try {
@@ -14,14 +16,23 @@ const Login = ({ onLogin }) => {
                 username,
                 password,
             });
-            // Save user in sessionStorage for future use
+
+            // Save user and show toast
             sessionStorage.setItem("user", JSON.stringify(response.data));
-            alert("Login successful");
-            onLogin(response.data); // Pass user info to parent
+            setToastMessage("Login successful");
+
+            // Delay navigation so toast can be seen
+            setTimeout(() => {
+                setToastMessage("");
+                onLogin(response.data); // Now call after 2s
+            }, 4000);
+
         } catch (err) {
-            alert("Invalid username or password");
+            setToastMessage("Invalid username or password");
+            setTimeout(() => setToastMessage(""), 3000);
         }
     };
+
 
     const handleRegister = async () => {
         try {
@@ -39,13 +50,20 @@ const Login = ({ onLogin }) => {
 
     return (
         <div className="login">
+            {toastMessage && (
+                <div className="toast">
+                    <span className="icon">&#10004;</span>
+                    <span>{toastMessage}</span>
+                </div>
+            )}
+
             <h2 className="login-mode">{isLoginMode ? "Login" : "Register"}</h2>
-            <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} className="username"/>
+            <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} className="username" />
             {!isLoginMode && (
-                <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="email"/>
+                <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="email" />
             )}
             <div className="form-group">
-                <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="password"/>
+                <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="password" />
                 {isLoginMode ? (
                     <button onClick={handleLogin}>Login</button>
                 ) : (
@@ -58,6 +76,7 @@ const Login = ({ onLogin }) => {
             </button>
         </div>
     );
+
 };
 
 export default Login;

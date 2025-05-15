@@ -10,6 +10,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -83,7 +86,25 @@ public class DocumentController {
     	    savedDocument = documentService.saveDocument(file, name, type, user);
     	  }
     	
-    	 System.out.println("Document saved. ID = " + savedDocument.getId());
+    	 if (!type.equalsIgnoreCase("application/pdf")) {
+    		    String extractedText = metadataRepository.findByDocumentId(savedDocument.getId())
+    		        .map(meta -> meta.getExtractedText())
+    		        .orElse("");
+
+    		    if (!extractedText.isBlank()) {
+    		        luceneService.indexDocument(
+    		            savedDocument.getId().toString(),
+    		            savedDocument.getName(),
+    		            savedDocument.getType(),
+    		            extractedText,
+    		            userId.toString()
+    		        );
+    		        System.out.println("Non-PDF document indexed in Lucene.");
+    		    } else {
+    		        System.out.println("Skipping Lucene indexing — extracted text not available yet.");
+    		    }
+    		}
+
 
     	  return ResponseEntity.ok(savedDocument);
     }
@@ -111,33 +132,60 @@ public class DocumentController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<?> getUserDocuments(@RequestParam("userId") Long userId) {
-        List<Document> documents = documentService.getAllDocuments()
-                .stream()
-                .filter(doc -> doc.getOwner() != null && doc.getOwner().getId().equals(userId))
-                .collect(Collectors.toList());
+    public ResponseEntity<?> getUserDocuments(
+            @RequestParam(name = "userId") Long userId,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestParam(name = "type", required = false) String type) {
 
-        if (documents.isEmpty()) {
-            return ResponseEntity.ok(Collections.emptyList());
+        System.out.println("Page size: " + size + ", Page: " + page);
+        System.out.println("Type filter received: " + type);
+
+        Map<String, String> mimeTypes = Map.of(
+            "pdf", "application/pdf",
+            "docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "image", "image/png" 
+        );
+
+        Page<DocumentMetadata> metadataPage;
+
+        if (type == null || type.equalsIgnoreCase("all")) {
+            metadataPage = metadataRepository.findByDocumentOwnerId(
+                userId, PageRequest.of(page, size, Sort.by("uploadTimestamp").descending()));
+        } else {
+            String mappedType = mimeTypes.getOrDefault(type.toLowerCase(), type); // fallback to raw type
+            metadataPage = metadataRepository.findByDocumentOwnerIdAndType(
+                userId, mappedType, PageRequest.of(page, size, Sort.by("uploadTimestamp").descending()));
         }
 
-        List<Map<String, Object>> metadataList = documents.stream().map(doc -> {
+        List<Map<String, Object>> responseDocs = metadataPage.getContent().stream().map(meta -> {
+            Document doc = meta.getDocument();
             Map<String, Object> map = new HashMap<>();
             map.put("id", doc.getId());
             map.put("name", doc.getName());
             map.put("type", doc.getType());
-            
-            if (doc.getOwner() != null) {
-                Map<String, Object> ownerMap = new HashMap<>();
-                ownerMap.put("id", doc.getOwner().getId());
-                ownerMap.put("username", doc.getOwner().getUsername());
-                map.put("owner", ownerMap);
-            }
+            map.put("status", meta.getStatus());
+            map.put("uploadTimestamp", meta.getUploadTimestamp());
+
+            Map<String, Object> ownerMap = new HashMap<>();
+            ownerMap.put("id", doc.getOwner().getId());
+            ownerMap.put("username", doc.getOwner().getUsername());
+            map.put("owner", ownerMap);
+
             return map;
         }).collect(Collectors.toList());
 
-        return ResponseEntity.ok(metadataList);
+        Map<String, Object> response = new HashMap<>();
+        response.put("documents", responseDocs);
+        response.put("currentPage", page);
+        response.put("totalPages", metadataPage.getTotalPages());
+        response.put("totalDocuments", metadataPage.getTotalElements());
+
+        return ResponseEntity.ok(response);
     }
+
+
 
     //View extracted text
     @GetMapping("/extracted-text/{id}")
@@ -177,10 +225,12 @@ public class DocumentController {
         
         //List<DocumentMetadata> results = documentService.searchDocuments(q, userId);
     	List<SearchResult> results = luceneService.fuzzySearch(q, userId.toString());
-
+    	 //List<SearchResult> results = luceneService.searchByName(q, userId.toString());
+    	 
         if (results.isEmpty()) {
             return ResponseEntity.ok("No results found.");
         }
+        System.out.println("Search results size: " + results.size());
 
         return ResponseEntity.ok(results);
     }
@@ -219,6 +269,19 @@ public class DocumentController {
         } else {
             System.err.println("Metadata not found for document ID " + document.getId());
         }
+    }
+    
+    @GetMapping("/metadata/{id}")
+    public ResponseEntity<?> getDocumentMetadata(@PathVariable("id") Long id) {
+        return metadataRepository.findByDocumentId(id).map(metadata -> {
+            Map<String, Object> meta = new HashMap<>();
+            meta.put("name", metadata.getDocument().getName());
+            meta.put("type", metadata.getDocument().getType());
+            meta.put("status", metadata.getStatus());
+            meta.put("uploadedOn", metadata.getUploadTimestamp());
+            meta.put("uploadedBy", metadata.getDocument().getOwner().getUsername());
+            return ResponseEntity.ok(meta);
+        }).orElse(ResponseEntity.notFound().build());
     }
 
 }

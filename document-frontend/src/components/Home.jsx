@@ -7,22 +7,43 @@ import './css/Home.css';
 
 const Home = ({ user, onLogout }) => {
     const [documents, setDocuments] = useState([]);
+    const [currentPage, setCurrentPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+    const pageSize = 10;
     const [showUpload, setShowUpload] = useState(false);
+    const [selectedType, setSelectedType] = useState("all");
 
-    const fetchDocuments = async () => {
+    useEffect(() => {
+        fetchDocuments(0);
+    }, [selectedType]);
+
+
+    const fetchDocuments = async (page = 0) => {
+        console.log("Calling /documents/list with:", {
+            type: selectedType,
+            userId: user.userId || user.id
+        });
+
         try {
             const response = await axios.get('http://localhost:9090/documents/list', {
-                params: { userId: user.userId },
+                params: {
+                    userId: user.userId || user.id,
+                    page: page,
+                    size: pageSize,
+                    type: selectedType !== "all" ? selectedType : undefined
+                },
             });
-            setDocuments(Array.isArray(response.data) ? response.data : []);
+
+            console.log("documents in state:", response.data.documents); 
+
+            setDocuments(response.data.documents || []);
+            setCurrentPage(response.data.currentPage);
+            setTotalPages(response.data.totalPages);
         } catch (error) {
             console.error("Failed to fetch documents:", error);
         }
     };
 
-    useEffect(() => {
-        fetchDocuments();
-    }, []);
 
     const handleTempUpload = (tempDoc) => {
         setDocuments((prev) => [tempDoc, ...prev]);
@@ -52,23 +73,27 @@ const Home = ({ user, onLogout }) => {
 
             <h2 className="page-title">Documents</h2>
             <div className="search-upload-bar">
-                <SearchDocument user={user} />
+                <SearchDocument
+                    user={user}
+                    selectedType={selectedType}
+                    setSelectedType={setSelectedType}
+                />
                 <button className="upload-button" onClick={() => setShowUpload(true)}>+ New Document</button>
             </div>
 
+
             <div className="document-wrapper">
                 <div className="document-section">
-                    <UserDocuments user={user} documents={documents} onDocumentDelete={fetchDocuments} />
+                    <UserDocuments user={user} documents={documents} onDocumentDelete={() => fetchDocuments(currentPage)} />
+                    <div className="pagination-controls">
+                        <button disabled={currentPage === 0} onClick={() => fetchDocuments(currentPage - 1)}>Previous</button>
+                        <span className="page-number">Page {currentPage + 1} of {totalPages}</span>
+                        <button disabled={currentPage + 1 >= totalPages} onClick={() => fetchDocuments(currentPage + 1)}>Next</button>
+                    </div>
                 </div>
             </div>
 
-            <UploadForm
-                user={user}
-                visible={showUpload}
-                onClose={() => setShowUpload(false)}
-                onTempUpload={handleTempUpload}
-                onUploadSuccess={handleUploadSuccess}
-            />
+            <UploadForm user={user} visible={showUpload} onClose={() => setShowUpload(false)} onTempUpload={handleTempUpload} onUploadSuccess={handleUploadSuccess} />
         </div>
     );
 };
