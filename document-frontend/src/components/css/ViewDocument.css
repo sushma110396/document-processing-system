@@ -18,9 +18,9 @@
     text-decoration: none;
 }
 
-    .back-link:hover {
-        text-decoration: underline;
-    }
+.back-link:hover {
+    text-decoration: underline;
+}
 
 .metadata-card {
     background-color: #1e293b;

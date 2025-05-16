@@ -34,7 +34,7 @@ const UploadForm = ({ user, onUploadSuccess, visible, onClose, onTempUpload }) =
 
         const tempId = Date.now();
         onTempUpload({ tempId, name: file.name, status: 'uploading' });
-        onClose(); // close immediately
+        onClose(); 
 
         const formData = new FormData();
         formData.append('file', file);
@@ -47,7 +47,7 @@ const UploadForm = ({ user, onUploadSuccess, visible, onClose, onTempUpload }) =
             await axios.post('http://localhost:9090/documents/upload', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
-            onUploadSuccess(tempId); // update status to 'uploaded'
+            onUploadSuccess(tempId); 
         } catch (error) {
             console.error('Upload failed:', error);
             alert('Upload failed');

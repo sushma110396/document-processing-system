@@ -7,10 +7,10 @@ html, body {
 
 .home-page {
     max-width: 1000px;
-    margin: 0 auto;
+    margin: 40px auto 80px auto; 
     padding: 24px;
     font-family: sans-serif;
-    background: rgba(255, 255, 255, 0.85); /* light glassy look */
+    background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(10px);
     border-radius: 12px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
@@ -114,11 +114,11 @@ html, body {
 
 .document-wrapper {
     width: 100%;
-    background-color: rgba(255, 255, 255, 0.6); /* soft white background */
+    background-color: rgba(255, 255, 255, 0.6); 
     padding: 0 24px;
     box-sizing: border-box;
     border-radius: 12px;
-    backdrop-filter: blur(6px); /* gives it a modern frosted-glass look */
+    backdrop-filter: blur(6px); 
     color: #333;
 }
 

@@ -34,14 +34,10 @@ const SearchDocument = ({ user, selectedType, setSelectedType }) => {
                     {dropdownOpen && (
                         <ul className="dropdown-options">
                             {types.map((type) => (
-                                <li
-                                    key={type}
-                                    className={`dropdown-option${type === selectedType ? ' selected' : ''}`}
-                                    onClick={(e) => {
+                                <li key={type} className={`dropdown-option${type === selectedType ? ' selected' : ''}`} onClick={(e) => {
                                         e.stopPropagation();
                                         handleTypeSelect(type);
-                                    }}
-                                >
+                                    }}>
                                     {type.toUpperCase()}
                                 </li>
 
@@ -50,17 +46,9 @@ const SearchDocument = ({ user, selectedType, setSelectedType }) => {
                     )}
                 </div>
 
-                <input
-                    type="text"
-                    placeholder="Search documents..."
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    className="search-input-combined"
-                />
+                <input type="text" placeholder="Search documents..." value={query} onChange={(e) => setQuery(e.target.value)} className="search-input-combined"/>
 
-                <button type="submit" className="search-button-combined">
-                    Search
-                </button>
+                <button type="submit" className="search-button-combined"> Search </button>
             </div>
         </form>
     );

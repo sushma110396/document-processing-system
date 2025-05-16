@@ -56,10 +56,10 @@ const Home = ({ user, onLogout }) => {
             )
         );
 
-        // Delay refresh so  is visible
+ 
         setTimeout(() => {
-            fetchDocuments(); // replace temp with real document info
-        }, 3000); // 1.5 seconds delay
+            fetchDocuments(); 
+        }, 3000); 
     };
 
     return (
