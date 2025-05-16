@@ -103,7 +103,7 @@ public class DocumentService {
         	    savedDocument.getId().toString(),
         	    savedDocument.getName(),
         	    savedDocument.getType(),
-        	    metadata.getExtractedText(),  // or whatever field holds text
+        	    metadata.getExtractedText(),  
         	    currentUser.getId().toString()
         	);
 

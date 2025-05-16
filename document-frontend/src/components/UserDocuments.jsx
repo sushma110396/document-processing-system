@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 
 const UserDocuments = ({ user, documents, onDocumentDelete }) => {
     const [viewedText, setViewedText] = React.useState(null);
+    const [deleteTargetId, setDeleteTargetId] = React.useState(null);
+
     const navigate = useNavigate(); 
 
     // Handle file download
@@ -27,21 +29,21 @@ const UserDocuments = ({ user, documents, onDocumentDelete }) => {
     };
 
     // Handle file delete with confirmation
-    const handleDelete = async (docId) => {
-        const confirmDelete = window.confirm("Are you sure you want to delete this document?");
-        if (!confirmDelete) return;
-
+    const handleDeleteConfirm = async () => {
         try {
-            await axios.delete(`http://localhost:9090/documents/delete/${docId}`, {
+            await axios.delete(`http://localhost:9090/documents/delete/${deleteTargetId}`, {
                 params: { userId: user.userId },
             });
             alert("Document deleted successfully");
-            onDocumentDelete(); // trigger refresh in Home
+            onDocumentDelete();
         } catch (error) {
             console.error("Delete failed:", error);
             alert("You are not authorized to delete this document.");
+        } finally {
+            setDeleteTargetId(null);
         }
     };
+
 
     // Navigate to view page
     const handleView = (docId) => {
@@ -58,12 +60,24 @@ const UserDocuments = ({ user, documents, onDocumentDelete }) => {
                         {doc.status === 'uploaded' && <span className="doc-status success">{'\u2713'}</span>}
                         <div className="doc-actions">
                             <button id="download" onClick={() => handleDownload(doc.id, doc.name, doc.type)}>Download</button>{" "}
-                            <button id="delete" onClick={() => handleDelete(doc.id)}>Delete</button>
+                            <button id="delete" onClick={() => setDeleteTargetId(doc.id)}>Delete</button>
                             <button id="view" onClick={() => handleView(doc.id)} disabled={!doc.id}>View</button>
                         </div>
                     </li>
                 ))}
             </ul>
+            {deleteTargetId && (
+                <div className="modal-backdrop">
+                    <div className="modal">
+                        <p>Are you sure you want to delete this document?</p>
+                        <div className="modal-buttons">
+                            <button className="confirm" onClick={handleDeleteConfirm}>Delete</button>
+                            <button className="cancel" onClick={() => setDeleteTargetId(null)}>Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 };

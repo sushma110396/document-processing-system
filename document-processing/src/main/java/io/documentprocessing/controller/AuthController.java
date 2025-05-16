@@ -35,7 +35,7 @@ public class AuthController {
         User user = new User();
         user.setUsername(username);
         user.setEmail(email); 
-        user.setPassword(password); // storing raw password for now
+        user.setPassword(password); 
 
         userRepository.save(user);
 

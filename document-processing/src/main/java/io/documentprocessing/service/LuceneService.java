@@ -54,7 +54,7 @@ public class LuceneService {
             doc.add(new TextField("name", baseName.toLowerCase(), Field.Store.YES));
             doc.add(new TextField("extractedText", extractedText.toLowerCase(), Field.Store.YES));
 
-            writer.addDocument(doc);
+            writer.updateDocument(new Term("id", id), doc); 
         }
     }
 
@@ -116,7 +116,6 @@ public class LuceneService {
         List<SearchResult> results = new ArrayList<>();
         Directory directory = FSDirectory.open(indexPath);
 
-        // Prevent crash if index doesn't exist
         if (!DirectoryReader.indexExists(directory)) {
             System.out.println("Lucene index not found yet — returning empty result.");
             return results;

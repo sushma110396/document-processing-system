@@ -27,12 +27,11 @@ public class S3StorageService {
         this.s3Client = s3Client;
     }
 
-	// Uploads a file to S3 and returns the S3 key used
+	// Uploads a file to S3 
     public String uploadFile(MultipartFile file) throws Exception {
     	// Generate a unique key
         String key = UUID.randomUUID() + "_" + file.getOriginalFilename();
 
-        // Build the PutObjectRequest for the file
         PutObjectRequest request = PutObjectRequest.builder()
                 .bucket(bucket)
                 .key(key)
@@ -47,7 +46,7 @@ public class S3StorageService {
         return key;
     }
     
-    // Downloads a file from S3 using the key and returns its content as byte array
+    // Downloads a file from S3 using the key 
     public byte[] downloadFile(String s3Key) throws IOException {
         // Build the request to fetch the object
 		GetObjectRequest getObjectRequest = GetObjectRequest.builder()

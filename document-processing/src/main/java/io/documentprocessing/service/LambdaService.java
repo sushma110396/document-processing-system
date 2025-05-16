@@ -51,7 +51,6 @@ public class LambdaService {
             //Parse outer JSON
             JSONObject root = new JSONObject(responseJson);
 
-            //Get and parse the nested "body" string as JSON
             String bodyString = root.getString("body");
             JSONObject body = new JSONObject(bodyString);
 
@@ -69,7 +68,7 @@ public class LambdaService {
 
             documentMetadataRepository.save(metadata);
             
-         // Index in Lucene now that extractedText is available
+         // Index in Lucene as extractedText is available
             try {
                 luceneService.indexDocument(
                     metadata.getDocument().getId().toString(),

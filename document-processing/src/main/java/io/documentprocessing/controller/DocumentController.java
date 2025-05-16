@@ -75,14 +75,11 @@ public class DocumentController {
     	    
     	 Document savedDocument;
 
-    	 System.out.println("File upload started for userId: " + userId);
     	 if (file.getSize() > MULTIPART_UPLOAD_THRESHOLD) { // Limit: 100MB
     	        // Multipart upload for large file
-    		 System.out.println("Using multipart upload");
     	    savedDocument = documentService.saveLargeDocument(file, name, type, user);
     	 } else {
     	        // Simple upload for small file
-    		 System.out.println("Using simple upload");
     	    savedDocument = documentService.saveDocument(file, name, type, user);
     	  }
     	
@@ -99,7 +96,6 @@ public class DocumentController {
     		            extractedText,
     		            userId.toString()
     		        );
-    		        System.out.println("Non-PDF document indexed in Lucene.");
     		    } else {
     		        System.out.println("Skipping Lucene indexing — extracted text not available yet.");
     		    }
@@ -111,7 +107,6 @@ public class DocumentController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Document> getDocumentById(@PathVariable("id") Long id) {
-        System.out.println("Fetching document with ID: " + id);
 
         return documentService.getDocumentById(id)
                 .map(ResponseEntity::ok) 
@@ -138,8 +133,6 @@ public class DocumentController {
             @RequestParam(name = "size", defaultValue = "10") int size,
             @RequestParam(name = "type", required = false) String type) {
 
-        System.out.println("Page size: " + size + ", Page: " + page);
-        System.out.println("Type filter received: " + type);
 
         Map<String, String> mimeTypes = Map.of(
             "pdf", "application/pdf",
@@ -230,7 +223,6 @@ public class DocumentController {
         if (results.isEmpty()) {
             return ResponseEntity.ok("No results found.");
         }
-        System.out.println("Search results size: " + results.size());
 
         return ResponseEntity.ok(results);
     }
@@ -253,7 +245,6 @@ public class DocumentController {
             metadata.setExtractedText(extractedText);
             metadataRepository.save(metadata);
 
-            // Index it in Lucene now that text is available
             try {
                 luceneService.indexDocument(
                     document.getId().toString(),
@@ -262,7 +253,7 @@ public class DocumentController {
                     extractedText,
                     document.getOwner().getId().toString()
                 );
-                System.out.println("Document indexed with extracted text: " + extractedText);
+ 
             } catch (IOException e) {
                 System.err.println("Failed to index document in Lucene: " + e.getMessage());
             }

@@ -23,7 +23,6 @@ public class User{
 	@Column(nullable = false, length = 100, unique = true)
 	private String email;
 
-	/* Password field should not be included in the json response-So use json ignore */
 	@JsonIgnore    
 	@Column(nullable = false, length = 255)
 	private String password;

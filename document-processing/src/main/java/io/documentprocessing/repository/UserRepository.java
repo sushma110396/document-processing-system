@@ -8,8 +8,6 @@ import io.documentprocessing.model.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     User findByUsername(String username);
-    
-    // Optional method for clarity (not required)
     Optional<User> findById(Long id);
 }
 

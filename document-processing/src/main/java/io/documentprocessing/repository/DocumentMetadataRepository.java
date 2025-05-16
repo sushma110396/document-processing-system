@@ -32,7 +32,7 @@ public interface DocumentMetadataRepository extends JpaRepository<DocumentMetada
     	       "OR LOWER(m.extractedText) LIKE LOWER(CONCAT('%', :query, '%')))")
     	List<DocumentMetadata> searchByNameOrText(@Param("query") String query, @Param("userId") Long userId);
 
-    Page<DocumentMetadata> findByDocumentOwnerId(Long userId, Pageable pageable); // if you want user-specific docs
+    Page<DocumentMetadata> findByDocumentOwnerId(Long userId, Pageable pageable);
     
     @Query("SELECT dm FROM DocumentMetadata dm WHERE dm.document.owner.id = :userId")
     List<DocumentMetadata> findByUserId(@Param("userId") Long userId);
