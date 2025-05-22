@@ -97,7 +97,7 @@ public class DocumentController {
     		            userId.toString()
     		        );
     		    } else {
-    		        System.out.println("Skipping Lucene indexing — extracted text not available yet.");
+    		        System.out.println("Skipping Lucene indexing - extracted text not available yet.");
     		    }
     		}
 

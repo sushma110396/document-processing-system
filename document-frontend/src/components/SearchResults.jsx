@@ -20,8 +20,6 @@ const SearchResults = ({ user }) => {
             setStatus("");
 
             try {
-                console.log("Searching for:", query, "userId:", user.userId);
-
                 const response = await axios.get("http://localhost:9090/documents/search", {
                     params: { q: query, userId: user.userId },
                 });

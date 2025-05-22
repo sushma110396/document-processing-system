@@ -63,7 +63,7 @@ public class LuceneService {
         Directory directory = FSDirectory.open(indexPath);
 
         if (!DirectoryReader.indexExists(directory)) {
-            System.out.println("Lucene index not found yet — returning empty result.");
+            System.out.println("Lucene index not found yet - returning empty result.");
             return results;
         }
 
@@ -117,7 +117,7 @@ public class LuceneService {
         Directory directory = FSDirectory.open(indexPath);
 
         if (!DirectoryReader.indexExists(directory)) {
-            System.out.println("Lucene index not found yet — returning empty result.");
+            System.out.println("Lucene index not found yet - returning empty result.");
             return results;
         }
 

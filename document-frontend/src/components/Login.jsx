@@ -5,7 +5,7 @@ import './css/Login.css';
 const Login = ({ onLogin }) => {
     const [isLoginMode, setIsLoginMode] = useState(true);
     const [username, setUsername] = useState("");
-    const [email, setEmail] = useState(""); // Only used during registration
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [toastMessage, setToastMessage] = useState("");
 
@@ -17,14 +17,13 @@ const Login = ({ onLogin }) => {
                 password,
             });
 
-            // Save user and show toast
             sessionStorage.setItem("user", JSON.stringify(response.data));
             setToastMessage("Login successful");
 
             // Delay navigation so toast can be seen
             setTimeout(() => {
                 setToastMessage("");
-                onLogin(response.data); // Now call after 2s
+                onLogin(response.data); 
             }, 4000);
 
         } catch (err) {

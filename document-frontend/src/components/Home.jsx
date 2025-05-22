@@ -19,11 +19,6 @@ const Home = ({ user, onLogout }) => {
 
 
     const fetchDocuments = async (page = 0) => {
-        console.log("Calling /documents/list with:", {
-            type: selectedType,
-            userId: user.userId || user.id
-        });
-
         try {
             const response = await axios.get('http://localhost:9090/documents/list', {
                 params: {
@@ -33,8 +28,6 @@ const Home = ({ user, onLogout }) => {
                     type: selectedType !== "all" ? selectedType : undefined
                 },
             });
-
-            console.log("documents in state:", response.data.documents); 
 
             setDocuments(response.data.documents || []);
             setCurrentPage(response.data.currentPage);
@@ -87,7 +80,12 @@ const Home = ({ user, onLogout }) => {
                     <UserDocuments user={user} documents={documents} onDocumentDelete={() => fetchDocuments(currentPage)} />
                     <div className="pagination-controls">
                         <button disabled={currentPage === 0} onClick={() => fetchDocuments(currentPage - 1)}>Previous</button>
-                        <span className="page-number">Page {currentPage + 1} of {totalPages}</span>
+                        <span className="page-number">{totalPages > 0 ? (
+                            <p>Page {currentPage + 1} of {totalPages}</p>
+                        ) : (
+                            <p>No documents to display</p>
+                        )}
+                        </span>
                         <button disabled={currentPage + 1 >= totalPages} onClick={() => fetchDocuments(currentPage + 1)}>Next</button>
                     </div>
                 </div>

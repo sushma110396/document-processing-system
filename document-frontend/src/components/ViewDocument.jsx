@@ -58,7 +58,7 @@ const ViewDocument = () => {
                         <div><span className="label">Name:</span> {metadata.name}</div>
                         <div><span className="label">Type:</span> {getReadableType(metadata.type)}</div>
                         <div><span className="label">Uploaded By:</span> {metadata.uploadedBy}</div>
-                        <div><span className="label">Uploaded On:</span> {metadata.uploadedOn}</div>
+                        <div><span className="label">Uploaded On:</span> { new Date(metadata.uploadedOn).toLocaleString() }</div>
                         <div><span className="label">Status:</span> {metadata.status}</div>
                     </div>
                 </div>
