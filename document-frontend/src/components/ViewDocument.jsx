@@ -28,8 +28,8 @@ const ViewDocument = () => {
         const fetchData = async () => {
             try {
                 const [textRes, metaRes] = await Promise.all([
-                    axios.get(`http://localhost:9090/documents/extracted-text/${id}`),
-                    axios.get(`http://localhost:9090/documents/metadata/${id}`)
+                    axios.get(`http://document-processing-system.onrender.com/extracted-text/${id}`),
+                    axios.get(`http://document-processing-system.onrender.com/documents/metadata/${id}`)
                 ]);
                 setText(textRes.data);
                 setMetadata(metaRes.data);

@@ -20,7 +20,7 @@ const Home = ({ user, onLogout }) => {
 
     const fetchDocuments = async (page = 0) => {
         try {
-            const response = await axios.get('http://localhost:9090/documents/list', {
+            const response = await axios.get('http://document-processing-system.onrender.com/documents/list', {
                 params: {
                     userId: user.userId || user.id,
                     page: page,

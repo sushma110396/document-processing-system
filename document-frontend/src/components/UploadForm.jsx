@@ -44,7 +44,7 @@ const UploadForm = ({ user, onUploadSuccess, visible, onClose, onTempUpload }) =
 
         try {
             setUploading(true);
-            await axios.post('http://localhost:9090/documents/upload', formData, {
+            await axios.post('https://document-processing-system.onrender.com/documents/upload', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
             onUploadSuccess(tempId); 

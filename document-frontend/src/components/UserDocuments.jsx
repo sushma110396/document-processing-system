@@ -12,7 +12,7 @@ const UserDocuments = ({ user, documents, onDocumentDelete }) => {
     // Handle file download
     const handleDownload = async (id, name, type) => {
         try {
-            const response = await axios.get(`http://localhost:9090/documents/download/${id}`, {
+            const response = await axios.get(`http://document-processing-system.onrender.com/documents/download/${id}`, {
                 responseType: "blob",
             });
 
@@ -31,7 +31,7 @@ const UserDocuments = ({ user, documents, onDocumentDelete }) => {
     // Handle file delete with confirmation
     const handleDeleteConfirm = async () => {
         try {
-            await axios.delete(`http://localhost:9090/documents/delete/${deleteTargetId}`, {
+            await axios.delete(`http://document-processing-system.onrender.com/documents/delete/${deleteTargetId}`, {
                 params: { userId: user.userId },
             });
             alert("Document deleted successfully");

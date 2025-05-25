@@ -20,7 +20,7 @@ const SearchResults = ({ user }) => {
             setStatus("");
 
             try {
-                const response = await axios.get("http://localhost:9090/documents/search", {
+                const response = await axios.get("http://document-processing-system.onrender.com/documents/search", {
                     params: { q: query, userId: user.userId },
                 });
 

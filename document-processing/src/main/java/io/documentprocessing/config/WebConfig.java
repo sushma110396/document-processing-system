@@ -14,8 +14,9 @@ public class WebConfig {
 	        @Override
 	        public void addCorsMappings(CorsRegistry registry) {
 	            registry.addMapping("/**")
-	                    .allowedOrigins("http://localhost:3000")  //Enable CORS for frontend to connect to backend
-	                    .allowedMethods("*")
+	            .allowedOrigins(
+                        "http://localhost:3000",
+                        "http://localhost:5173").allowedMethods("*")
 	                    .allowedHeaders("*");
 	        }
 	    };
