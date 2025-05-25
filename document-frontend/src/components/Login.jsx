@@ -12,7 +12,7 @@ const Login = ({ onLogin }) => {
 
     const handleLogin = async () => {
         try {
-            const response = await axios.post("http://document-processing-system.onrender.com/auth/login", {
+            const response = await axios.post("https://document-processing-system.onrender.com/auth/login", {
                 username,
                 password,
             });
@@ -35,7 +35,7 @@ const Login = ({ onLogin }) => {
 
     const handleRegister = async () => {
         try {
-            await axios.post("http://document-processing-system.onrender.com/auth/register", {
+            await axios.post("https://document-processing-system.onrender.com/auth/register", {
                 username,
                 email,
                 password,

@@ -122,15 +122,10 @@ public class DocumentController {
 
         byte[] fileBytes = documentService.downloadDocument(id);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + document.getName() + "\"");
-        headers.add(HttpHeaders.CONTENT_TYPE, document.getType());
-        
-        headers.add("Access-Control-Allow-Origin", "http://localhost:5173");
-        headers.add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-        headers.add("Access-Control-Allow-Headers", "*");
-
-        return new ResponseEntity<>(fileBytes, headers, HttpStatus.OK);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + document.getName() + "\"")
+                .contentType(MediaType.parseMediaType(document.getType()))
+                .body(fileBytes);
     }
 
     @GetMapping("/list")

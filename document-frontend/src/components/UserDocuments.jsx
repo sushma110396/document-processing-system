@@ -31,7 +31,7 @@ const UserDocuments = ({ user, documents, onDocumentDelete }) => {
     // Handle file delete with confirmation
     const handleDeleteConfirm = async () => {
         try {
-            await axios.delete(`http://document-processing-system.onrender.com/documents/delete/${deleteTargetId}`, {
+            await axios.delete(`https://document-processing-system.onrender.com/documents/delete/${deleteTargetId}`, {
                 params: { userId: user.userId },
             });
             alert("Document deleted successfully");

@@ -14,13 +14,18 @@ public class WebConfig {
 	        @Override
 	        public void addCorsMappings(CorsRegistry registry) {
 	            registry.addMapping("/**")
-	            .allowedOrigins(
-                        "http://localhost:3000",
-                        "http://localhost:5173").allowedMethods("*")
-	                    .allowedHeaders("*");
+	                .allowedOrigins(
+	                    "http://localhost:3000",
+	                    "http://localhost:5173"
+	                    // "https://your-s3-frontend-url.amazonaws.com" --> Add this for prod
+	                )
+	                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+	                .allowedHeaders("*")
+	                .allowCredentials(true); // This is important for cookies/session
 	        }
 	    };
 	}
+
 
     
 }
