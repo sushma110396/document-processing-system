@@ -35,6 +35,7 @@ import io.documentprocessing.repository.UserRepository;
 import io.documentprocessing.service.DocumentService;
 import io.documentprocessing.service.LuceneService;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
 
 
 @RestController
@@ -115,20 +116,21 @@ public class DocumentController {
     }
 
     @GetMapping("/download/{id}")
-    public ResponseEntity<byte[]> downloadDocument(@PathVariable("id") Long id, HttpServletResponse response) throws IOException {
+    public ResponseEntity<byte[]> downloadDocument(@PathVariable("id") Long id) throws IOException {
     	Document document = documentService.getDocumentById(id)
                 .orElseThrow(() -> new RuntimeException("Document not found"));
 
         byte[] fileBytes = documentService.downloadDocument(id);
-        
-        response.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
-        response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-        response.setHeader("Access-Control-Allow-Headers", "*");
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + document.getName() + "\"")
-                .contentType(MediaType.parseMediaType(document.getType()))
-                .body(fileBytes);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + document.getName() + "\"");
+        headers.add(HttpHeaders.CONTENT_TYPE, document.getType());
+        
+        headers.add("Access-Control-Allow-Origin", "http://localhost:5173");
+        headers.add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        headers.add("Access-Control-Allow-Headers", "*");
+
+        return new ResponseEntity<>(fileBytes, headers, HttpStatus.OK);
     }
 
     @GetMapping("/list")
