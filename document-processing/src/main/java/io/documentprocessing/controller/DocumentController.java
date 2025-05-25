@@ -34,6 +34,7 @@ import io.documentprocessing.repository.DocumentMetadataRepository;
 import io.documentprocessing.repository.UserRepository;
 import io.documentprocessing.service.DocumentService;
 import io.documentprocessing.service.LuceneService;
+import jakarta.servlet.http.HttpServletResponse;
 
 
 @RestController
@@ -114,11 +115,15 @@ public class DocumentController {
     }
 
     @GetMapping("/download/{id}")
-    public ResponseEntity<byte[]> downloadDocument(@PathVariable("id") Long id) throws IOException {
+    public ResponseEntity<byte[]> downloadDocument(@PathVariable("id") Long id, HttpServletResponse response) throws IOException {
     	Document document = documentService.getDocumentById(id)
                 .orElseThrow(() -> new RuntimeException("Document not found"));
 
         byte[] fileBytes = documentService.downloadDocument(id);
+        
+        response.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+        response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        response.setHeader("Access-Control-Allow-Headers", "*");
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + document.getName() + "\"")
