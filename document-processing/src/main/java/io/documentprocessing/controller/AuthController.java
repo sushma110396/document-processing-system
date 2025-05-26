@@ -2,20 +2,27 @@ package io.documentprocessing.controller;
 
 import io.documentprocessing.model.User;
 import io.documentprocessing.repository.UserRepository;
+import io.documentprocessing.service.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
 
 	private final UserRepository userRepository;
+	@Autowired
+	private TokenService tokenService;
+
 	
 	public AuthController(UserRepository userRepository) {
 		this.userRepository = userRepository;
@@ -49,7 +56,7 @@ public class AuthController {
         ));
     }
 	
-	@PostMapping("/login")
+	/*@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody Map<String, String> loginData, HttpServletRequest request) {
 		String username = loginData.get("username");
 	    String password = loginData.get("password");
@@ -69,6 +76,32 @@ public class AuthController {
 	    } else {
 	        return ResponseEntity.status(401).body("Invalid username or password");
 	    }
+	}*/
+	
+	@PostMapping("/login")
+	public ResponseEntity<?> login(@RequestBody Map<String, String> loginData) {
+	    String username = loginData.get("username");
+	    String password = loginData.get("password");
+
+	    User user = userRepository.findByUsername(username);
+
+	    if (user != null && user.getPassword().equals(password)) {
+	        // Issue a simple JWT (use a real JWT lib in production)
+	        String token = UUID.randomUUID().toString(); // Replace with JWT generation later
+
+	        // Store token in-memory (for now) - or use Redis/DB in production
+	        tokenService.storeToken(token, user.getId());
+
+
+	        return ResponseEntity.ok(Map.of(
+	            "userId", user.getId(),
+	            "username", user.getUsername(),
+	            "token", token
+	        ));
+	    } else {
+	        return ResponseEntity.status(401).body("Invalid username or password");
+	    }
 	}
+
 
 }
