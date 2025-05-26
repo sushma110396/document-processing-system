@@ -2,6 +2,9 @@ package io.documentprocessing.controller;
 
 import io.documentprocessing.model.User;
 import io.documentprocessing.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.*;
@@ -47,14 +50,18 @@ public class AuthController {
     }
 	
 	@PostMapping("/login")
-	public ResponseEntity<?> login(@RequestBody Map<String, String> loginData) {
-	    String username = loginData.get("username");
+	public ResponseEntity<?> login(@RequestBody Map<String, String> loginData, HttpServletRequest request) {
+		String username = loginData.get("username");
 	    String password = loginData.get("password");
 
 	    User user = userRepository.findByUsername(username);
 
 	    if (user != null && user.getPassword().equals(password)) {
-	        // Return basic user info instead of token
+	        // Create a session for the user
+	        HttpSession session = request.getSession(true);
+	        session.setAttribute("user", user); // Or just userId, as you prefer
+
+	        // Return basic user info
 	        return ResponseEntity.ok(Map.of(
 	            "userId", user.getId(),
 	            "username", user.getUsername()
