@@ -4,6 +4,8 @@ import SearchDocument from './SearchDocument';
 import axios from 'axios';
 import UserDocuments from './UserDocuments';
 import './css/Home.css';
+import API_BASE_URL from './api';
+
 
 const Home = ({ user, onLogout }) => {
     const [documents, setDocuments] = useState([]);
@@ -20,14 +22,18 @@ const Home = ({ user, onLogout }) => {
 
     const fetchDocuments = async (page = 0) => {
         try {
-            const response = await axios.get('https://document-processing-system.onrender.com/documents/list', {
+            //const token = sessionStorage.getItem('token');
+            const response = await axios.get(`${API_BASE_URL}/documents/list`, {
                 params: {
-                    userId: user.userId || user.id,
+                    userId: user.userId || user.id, 
                     page: page,
                     size: pageSize,
                     type: selectedType !== "all" ? selectedType : undefined
                 },
+               // headers: { Authorization: `Bearer ${token}` }
             });
+
+
 
             setDocuments(response.data.documents || []);
             setCurrentPage(response.data.currentPage);

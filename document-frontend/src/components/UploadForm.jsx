@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './css/UploadForm.css';
+import API_BASE_URL from './api';
 
 const UploadForm = ({ user, onUploadSuccess, visible, onClose, onTempUpload }) => {
     const [file, setFile] = useState(null);
@@ -44,11 +45,14 @@ const UploadForm = ({ user, onUploadSuccess, visible, onClose, onTempUpload }) =
 
         try {
             setUploading(true);
-            await axios.post('https://document-processing-system.onrender.com/documents/upload', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
+            await axios.post(`${API_BASE_URL}/documents/upload`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
             });
-            onUploadSuccess(tempId); 
-        } catch (error) {
+            onUploadSuccess(tempId);
+        }
+         catch (error) {
             console.error('Upload failed:', error);
             alert('Upload failed');
         } finally {

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import './css/ViewDocument.css'; 
+import API_BASE_URL from './api';
 
 const ViewDocument = () => {
     const { id } = useParams();
@@ -28,8 +29,8 @@ const ViewDocument = () => {
         const fetchData = async () => {
             try {
                 const [textRes, metaRes] = await Promise.all([
-                    axios.get(`https://document-processing-system.onrender.com/extracted-text/${id}`),
-                    axios.get(`https://document-processing-system.onrender.com/documents/metadata/${id}`)
+                    axios.get(`${API_BASE_URL}/documents/extracted-text/${id}`),
+                    axios.get(`${API_BASE_URL}/documents/metadata/${id}`)
                 ]);
                 setText(textRes.data);
                 setMetadata(metaRes.data);

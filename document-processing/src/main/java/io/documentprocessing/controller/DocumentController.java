@@ -2,13 +2,13 @@ package io.documentprocessing.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -35,7 +35,8 @@ import io.documentprocessing.repository.DocumentMetadataRepository;
 import io.documentprocessing.repository.UserRepository;
 import io.documentprocessing.service.DocumentService;
 import io.documentprocessing.service.LuceneService;
-import io.documentprocessing.service.TokenService;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
 
 
 @RestController
@@ -46,10 +47,7 @@ public class DocumentController {
     private final DocumentMetadataRepository metadataRepository;
     private final UserRepository userRepository;
     private final LuceneService luceneService;
-    
-    @Autowired
-    private TokenService tokenService;
-
+    private final AuthController authController;
 
     
     @Value("${aws.s3.bucket}")
@@ -58,11 +56,12 @@ public class DocumentController {
     private static final long MULTIPART_UPLOAD_THRESHOLD = 10L * 1024 * 1024; //100MB limit-(Change to 100mb later)
 
     public DocumentController(DocumentService documentService, DocumentMetadataRepository metadataRepository, UserRepository userRepository, 
-    		LuceneService luceneService) {
+    		LuceneService luceneService, AuthController authController) {
         this.documentService = documentService;
         this.metadataRepository = metadataRepository;
         this.userRepository = userRepository;
         this.luceneService = luceneService;
+        this.authController = authController;
     }
     
     @PostMapping("/upload")
@@ -137,14 +136,9 @@ public class DocumentController {
             @RequestParam(name = "userId") Long userId,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "10") int size,
-            @RequestParam(name = "type", required = false) String type,
-            @RequestHeader("Authorization") String authHeader) {
+            @RequestParam(name = "type", required = false) String type) {
 
-    	String token = authHeader.replace("Bearer ", "");
-    	Long userId1 = tokenService.getUserIdFromToken(token);
-
-
-        if (userId1 == null) {
+        if (userId == null) {
             return ResponseEntity.status(403).body("Forbidden");
         }
         Map<String, String> mimeTypes = Map.of(
@@ -158,11 +152,11 @@ public class DocumentController {
 
         if (type == null || type.equalsIgnoreCase("all")) {
             metadataPage = metadataRepository.findByDocumentOwnerId(
-                userId1, PageRequest.of(page, size, Sort.by("uploadTimestamp").descending()));
+                userId, PageRequest.of(page, size, Sort.by("uploadTimestamp").descending()));
         } else {
             String mappedType = mimeTypes.getOrDefault(type.toLowerCase(), type); // fallback to raw type
             metadataPage = metadataRepository.findByDocumentOwnerIdAndType(
-                userId1, mappedType, PageRequest.of(page, size, Sort.by("uploadTimestamp").descending()));
+                userId, mappedType, PageRequest.of(page, size, Sort.by("uploadTimestamp").descending()));
         }
 
         List<Map<String, Object>> responseDocs = metadataPage.getContent().stream().map(meta -> {

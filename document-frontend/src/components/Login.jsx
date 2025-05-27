@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import './css/Login.css';
+import API_BASE_URL from './api';
 
 const Login = ({ onLogin }) => {
     const [isLoginMode, setIsLoginMode] = useState(true);
@@ -12,12 +13,13 @@ const Login = ({ onLogin }) => {
 
     const handleLogin = async () => {
         try {
-            const response = await axios.post("https://document-processing-system.onrender.com/auth/login", {
+            const response = await axios.post(`${API_BASE_URL}/auth/login`, {
                 username,
                 password,
             });
 
             sessionStorage.setItem("user", JSON.stringify(response.data));
+            //sessionStorage.setItem('token', response.data.token);
             setToastMessage("Login successful");
 
             // Delay navigation so toast can be seen
@@ -39,7 +41,10 @@ const Login = ({ onLogin }) => {
                 username,
                 email,
                 password,
+            }, {
+                withCredentials: true
             });
+
             alert("Registration successful. Please log in.");
             setIsLoginMode(true); // Switch to login view
         } catch (err) {

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import './css/SearchResults.css';
+import API_BASE_URL from './api';
 
 const SearchResults = ({ user }) => {
     const location = useLocation();
@@ -20,8 +21,9 @@ const SearchResults = ({ user }) => {
             setStatus("");
 
             try {
-                const response = await axios.get("https://document-processing-system.onrender.com/documents/search", {
+                const response = await axios.get(`${API_BASE_URL}/documents/search`, {
                     params: { q: query, userId: user.userId },
+                    withCredentials: true
                 });
 
                 if (Array.isArray(response.data)) {

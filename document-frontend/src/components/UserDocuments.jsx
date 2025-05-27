@@ -2,6 +2,7 @@ import React from "react";
 import axios from "axios";
 import './css/UserDocuments.css';
 import { useNavigate } from "react-router-dom";
+import API_BASE_URL from './api';
 
 const UserDocuments = ({ user, documents, onDocumentDelete }) => {
     const [viewedText, setViewedText] = React.useState(null);
@@ -12,8 +13,10 @@ const UserDocuments = ({ user, documents, onDocumentDelete }) => {
     // Handle file download
     const handleDownload = async (id, name, type) => {
         try {
-            const response = await axios.get(`http://document-processing-system.onrender.com/documents/download/${id}`, {
-                responseType: "blob",
+            //const token = sessionStorage.getItem('token'); // Get the token
+            const response = await axios.get(`${API_BASE_URL}/documents/download/${id}`, {
+                responseType: "blob"
+                //headers: { Authorization: `Bearer ${token}` } // Send token in header
             });
 
             const blob = new Blob([response.data], { type });
@@ -28,11 +31,13 @@ const UserDocuments = ({ user, documents, onDocumentDelete }) => {
         }
     };
 
-    // Handle file delete with confirmation
+
     const handleDeleteConfirm = async () => {
         try {
-            await axios.delete(`https://document-processing-system.onrender.com/documents/delete/${deleteTargetId}`, {
-                params: { userId: user.userId },
+            //const token = sessionStorage.getItem('token'); // Get the token
+            await axios.delete(`${API_BASE_URL}/documents/delete/${deleteTargetId}`, {
+                params: { userId: user.userId || user.id } 
+               // headers: { Authorization: `Bearer ${token}` } // Send token in header
             });
             alert("Document deleted successfully");
             onDocumentDelete();
@@ -43,6 +48,7 @@ const UserDocuments = ({ user, documents, onDocumentDelete }) => {
             setDeleteTargetId(null);
         }
     };
+
 
 
     // Navigate to view page
