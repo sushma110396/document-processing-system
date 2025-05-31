@@ -71,4 +71,7 @@ tasks.withType(JavaCompile) {
     options.compilerArgs << "-parameters"
 }
 
+tasks.named('bootJar') {
+    archiveFileName = 'app.jar'
+}
 
