@@ -46,6 +46,7 @@
     display: flex;
     justify-content: space-between;
     gap: 10px;
+    font-size: 15px;
 }
 
 #submit {
@@ -56,6 +57,7 @@
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    font-size: 15px;
 }
 
     #submit:hover {
@@ -69,6 +71,7 @@
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    font-size: 15px;
 }
 
 .cancel-btn:hover {

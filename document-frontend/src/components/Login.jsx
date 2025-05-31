@@ -71,7 +71,7 @@ const Login = ({ onLogin }) => {
                 {isLoginMode ? (
                     <button onClick={handleLogin}>Login</button>
                 ) : (
-                    <button onClick={handleRegister}>Register</button>
+                    <button id="register" onClick={handleRegister}>Register</button>
                 )}
             </div>
             <br />

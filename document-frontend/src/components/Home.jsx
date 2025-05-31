@@ -5,9 +5,11 @@ import axios from 'axios';
 import UserDocuments from './UserDocuments';
 import './css/Home.css';
 import API_BASE_URL from './api';
+import { useNavigate } from 'react-router-dom';
 
 
-const Home = ({ user, onLogout }) => {
+const Home = ({ onLogout, user }) => {
+    //const [user, setUser] = useState(() => JSON.parse(sessionStorage.getItem("user")));
     const [documents, setDocuments] = useState([]);
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
@@ -15,9 +17,7 @@ const Home = ({ user, onLogout }) => {
     const [showUpload, setShowUpload] = useState(false);
     const [selectedType, setSelectedType] = useState("all");
 
-    useEffect(() => {
-        fetchDocuments(0);
-    }, [selectedType]);
+    const navigate = useNavigate();
 
 
     const fetchDocuments = async (page = 0) => {
@@ -42,6 +42,22 @@ const Home = ({ user, onLogout }) => {
             console.error("Failed to fetch documents:", error);
         }
     };
+
+    useEffect(() => {
+        if (!user) {
+            navigate('/login');
+        }
+    }, [user, navigate]);
+
+    useEffect(() => {
+        if (user) {
+            fetchDocuments(0);
+        }
+    }, [selectedType, user]);
+
+    if (!user) {
+        return <p>Loading...</p>;
+    }
 
 
     const handleTempUpload = (tempDoc) => {

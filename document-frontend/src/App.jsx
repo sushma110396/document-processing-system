@@ -34,13 +34,11 @@ const App = () => {
     return (
         <Routes>
             <Route path="/login" element={<Login onLogin={handleLogin} />} />
-            {user && (
-                <>
-                    <Route path="/" element={<Home user={user} onLogout={handleLogout} />} />
-                    <Route path="/search-results" element={<SearchResults user={user} />} />
-                    <Route path="/view/:id" element={<ViewDocument />} />
-                </>
-            )}
+            <Route path="/" element={<Home onLogout={handleLogout} user={user} />} />
+            <Route path="/search-results" element={<SearchResults user={user} />} />
+            <Route path="/view/:id" element={<ViewDocument />} />
+
+
         </Routes>
     );
 };

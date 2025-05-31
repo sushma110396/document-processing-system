@@ -7,6 +7,8 @@ import API_BASE_URL from './api';
 const UserDocuments = ({ user, documents, onDocumentDelete }) => {
     const [viewedText, setViewedText] = React.useState(null);
     const [deleteTargetId, setDeleteTargetId] = React.useState(null);
+    const [toastMessage, setToastMessage] = React.useState(null);
+
 
     const navigate = useNavigate(); 
 
@@ -39,7 +41,8 @@ const UserDocuments = ({ user, documents, onDocumentDelete }) => {
                 params: { userId: user.userId || user.id } 
                // headers: { Authorization: `Bearer ${token}` } // Send token in header
             });
-            alert("Document deleted successfully");
+            setToastMessage("Document deleted successfully"); // Show toast
+            setTimeout(() => setToastMessage(null), 3000); 
             onDocumentDelete();
         } catch (error) {
             console.error("Delete failed:", error);
@@ -83,6 +86,15 @@ const UserDocuments = ({ user, documents, onDocumentDelete }) => {
                     </div>
                 </div>
             )}
+            {toastMessage && (
+                <div className="toast-backdrop">
+                    <div className="toast-success">
+                        {toastMessage}
+                    </div>
+                </div>
+            )}
+
+
 
         </div>
     );
