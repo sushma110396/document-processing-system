@@ -14,7 +14,7 @@ org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 		@Override public void addCorsMappings(CorsRegistry registry) {
 			registry.addMapping("/**") .allowedOrigins( "http://localhost:3000",
 					"http://localhost:5174" , "http://document-processing-system.s3-website-us-west-1.amazonaws.com", 
-					"https://document-processing.fly.dev"
+					"https://document-processing.onrender.com"
 					) .allowedMethods("GET", "POST", "PUT", "DELETE",
 							"OPTIONS") .allowedHeaders("*") .allowCredentials(true); 
 		} }; }
