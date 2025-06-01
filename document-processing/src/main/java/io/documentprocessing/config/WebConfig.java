@@ -14,15 +14,16 @@ public class WebConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                .allowedOrigins(
-                                "http://localhost:3000",
-                                "http://localhost:5173",
-                                "http://document-processing-system.s3-website-us-west-1.amazonaws.com",
-                                "https://document-processing.onrender.com"
-                        )
-                		.allowedHeaders("Content-Type", "X-Requested-With", "Authorization")
-                		.allowCredentials(true);  // Keep this if you use cookies or auth headers
+                    .allowedOriginPatterns(
+                        "http://localhost:*",
+                        "http://document-processing-system.s3-website-us-west-1.amazonaws.com",
+                        "https://document-processing.onrender.com"
+                    )
+                    .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                    .allowedHeaders("*")
+                    .allowCredentials(true);
             }
         };
     }
 }
+
