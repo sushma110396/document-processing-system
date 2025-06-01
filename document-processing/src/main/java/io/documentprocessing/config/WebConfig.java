@@ -13,15 +13,13 @@ public class WebConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**")
-                    .allowedOriginPatterns(
-                        "http://localhost:*",
-                        "http://document-processing-system.s3-website-us-west-1.amazonaws.com",
-                        "https://document-processing.onrender.com"
-                    )
-                    .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                    .allowedHeaders("*")
-                    .allowCredentials(true);
+            	registry.addMapping("/**")
+                .allowedOriginPatterns(
+                    "*"
+                )
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
+                .allowCredentials(true);
             }
         };
     }
