@@ -20,8 +20,8 @@ public class WebConfig {
                                 "http://document-processing-system.s3-website-us-west-1.amazonaws.com",
                                 "https://document-processing.onrender.com"
                         )
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                        .allowedHeaders("*");
+                		.allowedHeaders("Content-Type", "X-Requested-With", "Authorization")
+                		.allowCredentials(true);  // Keep this if you use cookies or auth headers
             }
         };
     }
