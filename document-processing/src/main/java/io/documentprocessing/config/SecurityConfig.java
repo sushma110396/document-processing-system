@@ -31,8 +31,22 @@ public class SecurityConfig {
                         "http://document-processing-system.s3-website-us-west-1.amazonaws.com", // S3 static site
                         "https://document-processing.onrender.com" // Render deployment
                     ));
-                    corsConfiguration.setAllowedMethods(Collections.singletonList("*")); // Allow all methods: GET, POST, etc.
-                    corsConfiguration.setAllowedHeaders(Collections.singletonList("*")); // Allow all headers
+                    corsConfiguration.setAllowedMethods(Arrays.asList(
+                    	    "GET",
+                    	    "POST",
+                    	    "PUT",
+                    	    "DELETE",
+                    	    "OPTIONS"
+                    	));
+
+                    corsConfiguration.setAllowedHeaders(Arrays.asList(
+                    	    "Content-Type",
+                    	    "Authorization",
+                    	    "X-Requested-With",
+                    	    "Accept",
+                    	    "Origin"
+                    	));
+
                     corsConfiguration.setMaxAge(Duration.ofMinutes(5)); // Cache pre-flight response for 5 min
                     return corsConfiguration;
                 }
