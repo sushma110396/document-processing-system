@@ -48,7 +48,8 @@ const UploadForm = ({ user, onUploadSuccess, visible, onClose, onTempUpload }) =
             await axios.post(`${API_BASE_URL}/documents/upload`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
-                }
+                },
+                withCredentials: true 
             });
             onUploadSuccess(tempId);
         }

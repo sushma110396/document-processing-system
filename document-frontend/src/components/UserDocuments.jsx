@@ -17,7 +17,8 @@ const UserDocuments = ({ user, documents, onDocumentDelete }) => {
         try {
             //const token = sessionStorage.getItem('token'); // Get the token
             const response = await axios.get(`${API_BASE_URL}/documents/download/${id}`, {
-                responseType: "blob"
+                responseType: "blob",
+                withCredentials: true
                 //headers: { Authorization: `Bearer ${token}` } // Send token in header
             });
 
@@ -38,8 +39,10 @@ const UserDocuments = ({ user, documents, onDocumentDelete }) => {
         try {
             //const token = sessionStorage.getItem('token'); // Get the token
             await axios.delete(`${API_BASE_URL}/documents/delete/${deleteTargetId}`, {
-                params: { userId: user.userId || user.id } 
-               // headers: { Authorization: `Bearer ${token}` } // Send token in header
+                params: { userId: user.userId || user.id },
+                withCredentials: true
+                // headers: { Authorization: `Bearer ${token}` } // Send token in header
+
             });
             setToastMessage("Document deleted successfully"); // Show toast
             setTimeout(() => setToastMessage(null), 3000); 
