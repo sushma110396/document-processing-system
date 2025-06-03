@@ -19,12 +19,14 @@ import java.util.concurrent.ConcurrentHashMap;
 public class AuthController {
 
 	private final UserRepository userRepository;
+	private static final String CORS_ORIGIN_URL = "http://localhost:5173";
 
 	
 	public AuthController(UserRepository userRepository) {
 		this.userRepository = userRepository;
 	}
 
+	@CrossOrigin(CORS_ORIGIN_URL)
 	@PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody Map<String, String> userData) {
         String username = userData.get("username");
@@ -53,6 +55,7 @@ public class AuthController {
         ));
     }
 	
+	@CrossOrigin(CORS_ORIGIN_URL)
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody Map<String, String> loginData, HttpServletRequest request) {
 		String username = loginData.get("username");
