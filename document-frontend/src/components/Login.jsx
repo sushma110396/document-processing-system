@@ -13,27 +13,29 @@ const Login = ({ onLogin }) => {
 
     const handleLogin = async () => {
         try {
-            const response = await axios.post(`${API_BASE_URL}/auth/login`, {
-                username,
-                password,
-            });
+            const response = await axios.post(
+                `${API_BASE_URL}/auth/login`,
+                {
+                    username,
+                    password,
+                },
+                { withCredentials: true } // IMPORTANT: Allow cookies to flow in cross-origin requests
+            );
 
             sessionStorage.setItem("user", JSON.stringify(response.data));
-            //sessionStorage.setItem('token', response.data.token);
             setToastMessage("Login successful");
 
-            // Delay navigation so toast can be seen
             setTimeout(() => {
                 setToastMessage("");
-                onLogin(response.data); 
+                onLogin(response.data);
             }, 4000);
 
         } catch (err) {
+            console.error("Login error:", err); //Add debug info
             setToastMessage("Invalid username or password");
             setTimeout(() => setToastMessage(""), 3000);
         }
     };
-
 
     const handleRegister = async () => {
         try {

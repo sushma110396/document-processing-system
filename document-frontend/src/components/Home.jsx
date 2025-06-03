@@ -30,7 +30,8 @@ const Home = ({ onLogout, user }) => {
                     size: pageSize,
                     type: selectedType !== "all" ? selectedType : undefined
                 },
-               // headers: { Authorization: `Bearer ${token}` }
+                // headers: { Authorization: `Bearer ${token}` }
+                withCredentials: true
             });
 
 
