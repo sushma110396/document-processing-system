@@ -44,7 +44,8 @@ public class SecurityConfig {
                     	    "Authorization",
                     	    "X-Requested-With",
                     	    "Accept",
-                    	    "Origin"
+                    	    "Origin",
+                    	    "Access-Control-Allow-Origin"
                     	));
 
                     corsConfiguration.setMaxAge(Duration.ofMinutes(5)); // Cache pre-flight response for 5 min
