@@ -1,29 +1,48 @@
 package io.documentprocessing.config;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.List;
+import java.time.Duration;
+import java.util.Arrays;
+import java.util.Collections;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 public class SecurityConfig {
 
-	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-	    http
-	        .csrf().disable()
-	        .authorizeHttpRequests()
-	        .requestMatchers("/**").permitAll()
-	        .anyRequest().permitAll()
-	        .and()
-	        .cors();
-	    return http.build();
-	}
-}
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
+        httpSecurity
+            .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
+                @Override
+                public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+                    CorsConfiguration corsConfiguration = new CorsConfiguration();
+                    corsConfiguration.setAllowCredentials(true); // Allow cookies/session
+                    corsConfiguration.setAllowedOrigins(Arrays.asList(
+                        "http://localhost:5173", // Local React frontend
+                        "http://document-processing-system.s3-website-us-west-1.amazonaws.com", // S3 static site
+                        "https://document-processing.onrender.com" // Render deployment
+                    ));
+                    corsConfiguration.setAllowedMethods(Collections.singletonList("*")); // Allow all methods: GET, POST, etc.
+                    corsConfiguration.setAllowedHeaders(Collections.singletonList("*")); // Allow all headers
+                    corsConfiguration.setMaxAge(Duration.ofMinutes(5)); // Cache pre-flight response for 5 min
+                    return corsConfiguration;
+                }
+            }))
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/auth/**").permitAll() // Allow public auth routes
+                .anyRequest().permitAll()
+            );
+
+        return httpSecurity.build();
+    }
+}
