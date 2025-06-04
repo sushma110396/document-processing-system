@@ -8,50 +8,46 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import static org.springframework.security.config.Customizer.withDefaults;
+
 
 import java.time.Duration;
 import java.util.Arrays;
-import java.util.Collections;
 
 @Configuration
-@EnableWebSecurity  
+@EnableWebSecurity
 public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        System.out.println("SecurityConfig is ACTIVE"); // Add for verification in Render logs
+        System.out.println("SecurityConfig is ACTIVE");
 
-        httpSecurity
-            .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
-                @Override
-                public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-                    CorsConfiguration corsConfiguration = new CorsConfiguration();
-                    corsConfiguration.setAllowCredentials(true);
-                    corsConfiguration.setAllowedOrigins(Arrays.asList(
-                        "http://localhost:5173",
-                        "http://document-processing-system.s3-website-us-west-1.amazonaws.com",
-                        "https://document-processing.onrender.com"
-                    ));
-                    corsConfiguration.setAllowedMethods(Arrays.asList(
-                        "GET", "POST", "PUT", "DELETE", "OPTIONS"
-                    ));
-                    corsConfiguration.setAllowedHeaders(Arrays.asList(
-                        "Content-Type",
-                        "Authorization",
-                        "X-Requested-With",
-                        "Accept",
-                        "Origin"
-                    ));
-                    corsConfiguration.setMaxAge(Duration.ofMinutes(5));
-                    return corsConfiguration;
-                }
-            }))
+        return httpSecurity
+            .cors(withDefaults()) // Let Spring pick up the bean below
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/**").permitAll()
                 .anyRequest().permitAll()
-            );
+            )
+            .build();
+    }
 
-        return httpSecurity.build();
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.setAllowedOrigins(Arrays.asList(
+            "http://localhost:5173",
+            "http://document-processing-system.s3-website-us-west-1.amazonaws.com",
+            "https://document-processing.onrender.com"
+        ));
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization", "X-Requested-With", "Accept", "Origin"));
+        config.setMaxAge(Duration.ofMinutes(5));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 }
