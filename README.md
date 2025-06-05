@@ -23,7 +23,7 @@ A full-stack cloud-based document processing system that enables users to secure
 | Extraction   | AWS Lambda + Apache Tika/OCR      | Serverless text extraction               |
 | Deployment   | Render (backend), S3 (frontend)   | Scalable cloud hosting                   |
 
-## 🧪 How It Works
+## How It Works
 
 1. **Upload**: User uploads a document via the React frontend.
 2. **Storage**: File is uploaded to AWS S3, metadata is saved to PostgreSQL.
@@ -32,13 +32,13 @@ A full-stack cloud-based document processing system that enables users to secure
 5. **Search**: User can search across all their documents using full-text search.
 6. **Download**: Documents are available for download from S3.
 
-## 🚀 Deployment
+## Deployment
 
 - **Frontend** hosted on: `AWS S3 Static Website Hosting`
 - **Backend** deployed to: `Render`
 - Supports session-based login, CORS setup, and cookie management for cross-origin communication.
 
-## 🧳 Prerequisites
+## Prerequisites
 
 - Java 17+
 - Node.js 18+
