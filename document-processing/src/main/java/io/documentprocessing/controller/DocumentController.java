@@ -219,7 +219,7 @@ public class DocumentController {
         response.put("totalFiles", files.length);
 
         return ResponseEntity.ok(response);
-    }
+    }*/
 
     @GetMapping("/search")
     public ResponseEntity<?> searchDocuments(
@@ -235,7 +235,7 @@ public class DocumentController {
         }
 
         return ResponseEntity.ok(results);
-    }*/
+    }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteDocument(@PathVariable("id") Long id, @RequestParam("userId") Long userId) {
