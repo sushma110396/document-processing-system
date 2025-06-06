@@ -6,6 +6,9 @@ improving accessibility, traceability, and decision-making in clinical workflows
 It enables users to securely upload, download, extract, and search textual content from documents. 
 This platform supports rich document workflows and integrates various AWS services to deliver scalable, real-time document handling.
 
+![System Architecture](assets/system_diagram.svg)
+
+
 ## 📌 Features
 
 - User registration and login
