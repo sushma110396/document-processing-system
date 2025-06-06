@@ -284,7 +284,6 @@ public class DocumentController {
             return ResponseEntity.ok(meta);
         }).orElse(ResponseEntity.notFound().build());
     }
-
 }
 
 
