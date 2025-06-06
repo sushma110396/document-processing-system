@@ -1,10 +1,7 @@
 ﻿# Cloud-Based Medical Document Processing System
 
-A full-stack cloud-based document processing system built to streamline the handling of medical documents such as discharge summaries, lab reports, and clinical notes. 
-This system enables healthcare professionals to securely upload, extract, and search patient-related content across diverse document types — 
-improving accessibility, traceability, and decision-making in clinical workflows.
-It enables users to securely upload, download, extract, and search textual content from documents. 
-This platform supports rich document workflows and integrates various AWS services to deliver scalable, real-time document handling.
+A full-stack cloud-based system built to streamline the handling of medical documents such as discharge summaries, lab reports, and clinical notes. 
+It enables healthcare professionals to securely upload, extract, search, and manage patient-related content — enhancing accessibility and decision-making in clinical workflows.
 
 ![System Architecture](system_diagram.svg)
 
