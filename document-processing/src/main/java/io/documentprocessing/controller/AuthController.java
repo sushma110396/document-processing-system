@@ -26,7 +26,6 @@ public class AuthController {
 		this.userRepository = userRepository;
 	}
 
-	@CrossOrigin(CORS_ORIGIN_URL)
 	@PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody Map<String, String> userData) {
         String username = userData.get("username");
@@ -55,7 +54,6 @@ public class AuthController {
         ));
     }
 	
-	@CrossOrigin(CORS_ORIGIN_URL)
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody Map<String, String> loginData, HttpServletRequest request) {
 		String username = loginData.get("username");

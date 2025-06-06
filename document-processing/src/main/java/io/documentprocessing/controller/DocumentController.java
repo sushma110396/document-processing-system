@@ -16,7 +16,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -66,7 +65,7 @@ public class DocumentController {
         this.authController = authController;
     }
     
-    @CrossOrigin(CORS_ORIGIN_URL)
+
     @PostMapping("/upload")
     public ResponseEntity<Document> uploadDocument(@RequestParam("file") MultipartFile file,@RequestParam("name") String name,
     		@RequestParam("type") String type,@RequestParam("userId") Long userId) throws IOException, InterruptedException {
@@ -113,7 +112,7 @@ public class DocumentController {
     	  return ResponseEntity.ok(savedDocument);
     }
 
-    @CrossOrigin(CORS_ORIGIN_URL)
+
     @GetMapping("/{id}")
     public ResponseEntity<Document> getDocumentById(@PathVariable("id") Long id) {
 
@@ -122,7 +121,7 @@ public class DocumentController {
                 .orElseGet(() -> ResponseEntity.notFound().build()); 
     }
 
-    @CrossOrigin(CORS_ORIGIN_URL)
+
     @GetMapping("/download/{id}")
     public ResponseEntity<byte[]> downloadDocument(@PathVariable("id") Long id) throws IOException {
     	Document document = documentService.getDocumentById(id)
@@ -136,7 +135,7 @@ public class DocumentController {
                 .body(fileBytes);
     }
 
-    @CrossOrigin(CORS_ORIGIN_URL)
+
     @GetMapping("/list")
     public ResponseEntity<?> getUserDocuments(
             @RequestParam(name = "userId") Long userId,
@@ -150,7 +149,6 @@ public class DocumentController {
         Map<String, String> mimeTypes = Map.of(
             "pdf", "application/pdf",
             "docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            "xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             "image", "image/png" 
         );
 
@@ -192,8 +190,6 @@ public class DocumentController {
     }
 
 
-
-    @CrossOrigin(CORS_ORIGIN_URL)
     //View extracted text
     @GetMapping("/extracted-text/{id}")
     public ResponseEntity<String> getExtractedText(@PathVariable("id") Long documentId) {
@@ -201,8 +197,7 @@ public class DocumentController {
         		.orElse(ResponseEntity.notFound().build());
     }
     
-    @CrossOrigin(CORS_ORIGIN_URL)
-    @PostMapping("/upload/bulk")
+   /*@PostMapping("/upload/bulk")
     public ResponseEntity<Map<String, Object>> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files,  @AuthenticationPrincipal User user, UserRepository userRepository ) {
         List<String> success = new ArrayList<>();
         List<String> failed = new ArrayList<>();
@@ -226,7 +221,6 @@ public class DocumentController {
         return ResponseEntity.ok(response);
     }
 
-    @CrossOrigin(CORS_ORIGIN_URL)
     @GetMapping("/search")
     public ResponseEntity<?> searchDocuments(
             @RequestParam("q") String q,
@@ -241,9 +235,8 @@ public class DocumentController {
         }
 
         return ResponseEntity.ok(results);
-    }
+    }*/
 
-    @CrossOrigin(CORS_ORIGIN_URL)
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteDocument(@PathVariable("id") Long id, @RequestParam("userId") Long userId) {
     	 	User user = userRepository.findById(userId).orElse(null);
@@ -279,7 +272,6 @@ public class DocumentController {
         }
     }
     
-    @CrossOrigin(CORS_ORIGIN_URL)
     @GetMapping("/metadata/{id}")
     public ResponseEntity<?> getDocumentMetadata(@PathVariable("id") Long id) {
         return metadataRepository.findByDocumentId(id).map(metadata -> {
