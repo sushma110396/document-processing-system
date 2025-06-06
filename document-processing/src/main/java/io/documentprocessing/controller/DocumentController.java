@@ -283,8 +283,7 @@ public class DocumentController {
             meta.put("uploadedBy", metadata.getDocument().getOwner().getUsername());
             return ResponseEntity.ok(meta);
         }).orElse(ResponseEntity.notFound().build());
-    }
-    
+    }  
 }
 
 
