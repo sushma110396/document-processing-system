@@ -1,0 +1,99 @@
+<svg viewBox="0 0 1400 900" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1400" height="900" fill="#f8f9fa"/>
+  
+  <!-- Frontend -->
+  <rect x="100" y="350" width="180" height="200" rx="15" fill="#87CEEB" stroke="#5F9EA0" stroke-width="3"/>
+  <text x="190" y="385" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="#2F4F4F">Frontend</text>
+  
+  <!-- Computer icon -->
+  <rect x="160" y="410" width="60" height="40" rx="3" fill="none" stroke="#2F4F4F" stroke-width="2"/>
+  <rect x="165" y="415" width="50" height="30" rx="2" fill="none" stroke="#2F4F4F" stroke-width="2"/>
+  <line x1="175" y1="455" x2="205" y2="455" stroke="#2F4F4F" stroke-width="2"/>
+  <line x1="190" y1="455" x2="190" y2="465" stroke="#2F4F4F" stroke-width="2"/>
+  <rect x="180" y="465" width="20" height="8" rx="2" fill="none" stroke="#2F4F4F" stroke-width="2"/>
+  
+  <text x="190" y="500" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#2F4F4F">React</text>
+
+  <!-- AWS Section - positioned in upper middle -->
+  <rect x="450" y="100" width="350" height="450" rx="20" fill="#6A4C93" stroke="#4A148C" stroke-width="3"/>
+  <text x="625" y="140" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="white">AWS</text>
+
+  <!-- S3 -->
+  <rect x="480" y="170" width="290" height="90" rx="10" fill="#5B2C87" stroke="#4A148C" stroke-width="1"/>
+  <circle cx="540" cy="205" r="18" fill="none" stroke="white" stroke-width="2"/>
+  <path d="M 525 198 Q 540 190 555 198 Q 540 206 525 198" fill="none" stroke="white" stroke-width="2"/>
+  <path d="M 525 212 Q 540 204 555 212 Q 540 220 525 212" fill="none" stroke="white" stroke-width="2"/>
+  <text x="625" y="210" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white">Amazon S3</text>
+
+  <!-- Lambda -->
+  <rect x="480" y="290" width="290" height="90" rx="10" fill="#5B2C87" stroke="#4A148C" stroke-width="1"/>
+  <path d="M 530 320 L 555 335 L 540 360 L 515 345 Z" fill="none" stroke="white" stroke-width="2"/>
+  <path d="M 537 330 L 550 345 L 537 355" fill="none" stroke="white" stroke-width="2"/>
+  <text x="625" y="330" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white">AWS Lambda</text>
+
+  <!-- Textract -->
+  <rect x="480" y="410" width="290" height="90" rx="10" fill="#5B2C87" stroke="#4A148C" stroke-width="1"/>
+  <rect x="530" y="435" width="30" height="40" rx="3" fill="none" stroke="white" stroke-width="2"/>
+  <line x1="538" y1="445" x2="552" y2="445" stroke="white" stroke-width="1.5"/>
+  <line x1="538" y1="452" x2="548" y2="452" stroke="white" stroke-width="1.5"/>
+  <line x1="538" y1="459" x2="552" y2="459" stroke="white" stroke-width="1.5"/>
+  <line x1="538" y1="466" x2="548" y2="466" stroke="white" stroke-width="1.5"/>
+  <text x="625" y="450" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white">AWS Textract</text>
+
+  <!-- Backend -->
+  <rect x="1000" y="350" width="180" height="200" rx="15" fill="#4ECDC4" stroke="#26A69A" stroke-width="3"/>
+  <text x="1090" y="385" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="#2F4F4F">Backend</text>
+  
+  <!-- Spring Boot icon -->
+  <circle cx="1090" cy="435" r="30" fill="none" stroke="#2F4F4F" stroke-width="2"/>
+  <circle cx="1090" cy="435" r="18" fill="none" stroke="#2F4F4F" stroke-width="2"/>
+  <circle cx="1090" cy="435" r="10" fill="#2F4F4F"/>
+  
+  <text x="1090" y="500" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#2F4F4F">Spring Boot</text>
+
+  <!-- PostgreSQL Database -->
+  <rect x="1000" y="650" width="180" height="120" rx="15" fill="#FF9500" stroke="#E67E00" stroke-width="3"/>
+  <text x="1090" y="685" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white">PostgreSQL</text>
+  
+  <!-- Database icon -->
+  <ellipse cx="1090" cy="720" rx="35" ry="10" fill="none" stroke="white" stroke-width="2"/>
+  <ellipse cx="1090" cy="735" rx="35" ry="10" fill="none" stroke="white" stroke-width="2"/>
+  <line x1="1055" y1="720" x2="1055" y2="735" stroke="white" stroke-width="2"/>
+  <line x1="1125" y1="720" x2="1125" y2="735" stroke="white" stroke-width="2"/>
+
+  <!-- Connection arrows with better routing -->
+  
+  <!-- 1. Frontend to S3 (Upload) -->
+  <path d="M 280 380 Q 380 200 480 215" fill="none" stroke="#2E8B57" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="350" y="250" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#2E8B57">1. Upload Document</text>
+
+  <!-- 2. S3 triggers Lambda -->
+  <line x1="625" y1="260" x2="625" y2="290" stroke="#FF6B35" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="640" y="275" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#FF6B35">2. Trigger</text>
+
+  <!-- 3. Lambda uses Textract -->
+  <line x1="625" y1="380" x2="625" y2="410" stroke="#9B59B6" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="640" y="395" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#9B59B6">3. Extract Text</text>
+
+  <!-- 4. Processing results to Backend -->
+  <path d="M 800 380 Q 900 380 1000 420" fill="none" stroke="#E74C3C" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="900" y="370" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#E74C3C">4. Process &amp; Index</text>
+
+  <!-- 5. Backend to Database -->
+  <line x1="1090" y1="550" x2="1090" y2="650" stroke="#8E44AD" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="1100" y="600" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#8E44AD">5. Store Metadata</text>
+
+  <!-- 6. Frontend to Backend (Search & Management) -->
+  <path d="M 280 520 Q 640 650 1000 520" fill="none" stroke="#3498DB" stroke-width="2" marker-end="url(#arrowhead)" marker-start="url(#arrowhead)"/>
+  <text x="640" y="640" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#3498DB">6. Search &amp; Manage Documents</text>
+
+  <!-- Arrow marker definitions -->
+  <defs>
+    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="currentColor"/>
+    </marker>
+  </defs>
+
+
+</svg>
