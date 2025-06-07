@@ -1,5 +1,7 @@
 ﻿# Cloud-Based Medical Document Processing System
 
+ 🔗 **Live Website**: [http://document-processing-system.s3-website-us-west-1.amazonaws.com/](http://document-processing-system.s3-website-us-west-1.amazonaws.com/)
+
 A full-stack cloud-based system built to streamline the handling of medical documents such as discharge summaries, lab reports, and clinical notes. 
 It enables healthcare professionals to securely upload, extract, search, and manage patient-related content — enhancing accessibility and decision-making in clinical workflows.
 
