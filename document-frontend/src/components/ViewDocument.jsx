@@ -16,8 +16,6 @@ const ViewDocument = () => {
             'application/pdf': 'PDF',
             'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'DOCX',
             'application/msword': 'DOC',
-            'application/vnd.ms-excel': 'XLS',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'XLSX',
             'image/png': 'PNG',
             'image/jpeg': 'JPG'
         };

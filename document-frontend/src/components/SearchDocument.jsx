@@ -7,7 +7,7 @@ const SearchDocument = ({ user, selectedType, setSelectedType }) => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const navigate = useNavigate();
 
-    const types = ["all", "pdf", "docx", "xlsx", "image"];
+    const types = ["all", "pdf", "docx", "image"];
 
     const handleSearch = (e) => {
         e.preventDefault();

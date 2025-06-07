@@ -19,7 +19,7 @@ const Login = ({ onLogin }) => {
                     username,
                     password,
                 },
-                { withCredentials: true } // IMPORTANT: Allow cookies to flow in cross-origin requests
+                { withCredentials: true }
             );
 
             sessionStorage.setItem("user", JSON.stringify(response.data));

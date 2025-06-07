@@ -9,7 +9,6 @@ import { useNavigate } from 'react-router-dom';
 
 
 const Home = ({ onLogout, user }) => {
-    //const [user, setUser] = useState(() => JSON.parse(sessionStorage.getItem("user")));
     const [documents, setDocuments] = useState([]);
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
@@ -22,7 +21,6 @@ const Home = ({ onLogout, user }) => {
 
     const fetchDocuments = async (page = 0) => {
         try {
-            //const token = sessionStorage.getItem('token');
             const response = await axios.get(`${API_BASE_URL}/documents/list`, {
                 params: {
                     userId: user.userId || user.id, 
@@ -30,7 +28,6 @@ const Home = ({ onLogout, user }) => {
                     size: pageSize,
                     type: selectedType !== "all" ? selectedType : undefined
                 },
-                // headers: { Authorization: `Bearer ${token}` }
                 withCredentials: true
             });
 
