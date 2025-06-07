@@ -9,9 +9,10 @@ const Login = ({ onLogin }) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [toastMessage, setToastMessage] = useState("");
-
+    const [loading, setLoading] = useState(false);
 
     const handleLogin = async () => {
+        setLoading(true);
         try {
             const response = await axios.post(
                 `${API_BASE_URL}/auth/login`,
@@ -34,6 +35,8 @@ const Login = ({ onLogin }) => {
             console.error("Login error:", err); //Add debug info
             setToastMessage("Invalid username or password");
             setTimeout(() => setToastMessage(""), 3000);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -55,6 +58,8 @@ const Login = ({ onLogin }) => {
     };
 
     return (
+        <div className="login-wrapper">
+        { loading && <p className="loading-message">Logging in...</p>}
         <div className="login">
             {toastMessage && (
                 <div className="toast">
@@ -62,7 +67,6 @@ const Login = ({ onLogin }) => {
                     <span>{toastMessage}</span>
                 </div>
             )}
-
             <h2 className="login-mode">{isLoginMode ? "Login" : "Register"}</h2>
             <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} className="username" />
             {!isLoginMode && (
@@ -80,6 +84,7 @@ const Login = ({ onLogin }) => {
             <button id="login" onClick={() => setIsLoginMode(!isLoginMode)}>
                 {isLoginMode ? "Need an account? Register" : "Have an account? Login"}
             </button>
+            </div>
         </div>
     );
 
