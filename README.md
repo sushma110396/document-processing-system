@@ -13,7 +13,7 @@ It enables healthcare professionals to securely upload, extract, search, and man
 - Supports multipart upload for large files (100MB+)
 - Secure file download
 - Text extraction from uploaded files (via AWS Lambda)
-- Full-text search using Apache Lucene
+- Full-text and fuzzy search using Apache Lucene
 - Document metadata storage and retrieval
 
 ## 🛠️ Tech Stack
@@ -34,8 +34,9 @@ It enables healthcare professionals to securely upload, extract, search, and man
 2. **Storage**: File is uploaded to AWS S3, metadata is saved to PostgreSQL.
 3. **Text Extraction**: AWS Lambda function extracts text using AWS Textract.
 4. **Indexing**: Extracted text is indexed using Lucene for fast retrieval.
-5. **Search**: User can search across all their documents using full-text search.
+5. **Search**: User can perform full-text and fuzzy keyword searches across all their documents using Apache Lucene.
 6. **Download**: Documents are available for download from S3.
+7. **View**: User can view the documents that he uploaded.
 
 ## Deployment
 
