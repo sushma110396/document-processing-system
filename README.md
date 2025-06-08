@@ -26,8 +26,8 @@ It enables healthcare professionals to securely upload, extract, search, and man
 | Backend      | Spring Boot (Java)                | API layer and business logic             |
 | Database     | PostgreSQL                        | Store metadata and user info             |
 | Storage      | AWS S3                            | Store uploaded documents                 |
-| Search       | Apache Lucene                     | Indexing and full-text search            |
-| Extraction   | AWS Lambda + Apache Tika/OCR      | Serverless text extraction               |
+| Search       | Apache Lucene                     | Indexing and fuzzy search                |
+| Extraction   | AWS Lambda                        | Serverless text extraction               |
 | Deployment   | Render (backend), S3 (frontend)   | Scalable cloud hosting                   |
 
 ## How It Works
