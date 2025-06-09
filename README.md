@@ -33,7 +33,7 @@ It enables healthcare professionals to securely upload, extract, search, and man
 ## How It Works
 
 1. **Upload**: User uploads a document via the React frontend.
-2. **Storage**: File is uploaded to AWS S3, metadata is saved to PostgreSQL.
+2. **Storage**: File is uploaded to AWS S3, metadata is saved to PostgreSQL database hosted on Supabase platform.
 3. **Text Extraction**: AWS Lambda function extracts text using AWS Textract.
 4. **Indexing**: Extracted text is indexed using Lucene for fast retrieval.
 5. **Search**: User can perform full-text and fuzzy keyword searches across all their documents using Apache Lucene.
