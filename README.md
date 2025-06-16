@@ -44,7 +44,6 @@ It enables healthcare professionals to securely upload, extract, search, and man
 
 - **Frontend** hosted on: `AWS S3 Static Website Hosting`
 - **Backend** deployed to: `Render`
-- Supports session-based login, CORS setup, and cookie management for cross-origin communication.
 
 ## Prerequisites
 
