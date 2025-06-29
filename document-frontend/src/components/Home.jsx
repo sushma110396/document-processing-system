@@ -62,18 +62,30 @@ const Home = ({ onLogout, user }) => {
         setDocuments((prev) => [tempDoc, ...prev]);
     };
 
-    const handleUploadSuccess = (tempId) => {
-        setDocuments((prev) =>
-            prev.map((doc) =>
-                doc.tempId === tempId ? { ...doc, status: 'uploaded' } : doc
-            )
-        );
+  
+    const handleUploadSuccess = (tempId, savedDoc) => {
+        setDocuments((prevDocs) => {
+            const updated = prevDocs.map((doc) =>
+                doc.tempId === tempId
+                    ? { ...savedDoc, status: 'uploaded', tempId }
+                    : doc
+            );
 
- 
+            console.log("Updated documents state:", updated);
+            return updated;
+        });
+
         setTimeout(() => {
-            fetchDocuments(); 
-        }, 3000); 
+            setDocuments((prevDocs) =>
+                prevDocs.map((doc) =>
+                    doc.tempId === tempId
+                        ? { ...doc, status: null }
+                        : doc
+                )
+            );
+        }, 2000);
     };
+
 
     return (
         <div className="home-page">

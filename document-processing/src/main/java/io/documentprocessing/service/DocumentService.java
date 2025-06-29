@@ -5,9 +5,13 @@ import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -16,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
 import io.documentprocessing.model.Document;
 import io.documentprocessing.model.DocumentMetadata;
 import io.documentprocessing.model.User;
@@ -78,7 +83,7 @@ public class DocumentService {
 
         // Save document info to DB
         Document document = new Document();
-        document.setName(file.getOriginalFilename()); 
+        document.setName(name);  //  'name' is the versioned name from the controller 
         document.setType(type);
         document.setS3Key(s3Key);
         document.setOwner(currentUser);
@@ -188,6 +193,34 @@ public class DocumentService {
     public List<DocumentMetadata> searchDocuments(String query, Long userId) {
         return documentMetadataRepository.searchByNameOrText(query, userId);
     }
+
+    public String getAvailableFileName(Long userId, String originalName) {
+        String baseName = FilenameUtils.getBaseName(originalName); // e.g., "report"
+        String extension = FilenameUtils.getExtension(originalName); // e.g., "pdf"
+
+        List<DocumentMetadata> allMetadata = documentMetadataRepository.findAll();
+
+        Set<String> existingNames = allMetadata.stream()
+            .filter(meta -> {
+                Document doc = meta.getDocument();
+                return doc != null && doc.getOwner() != null && doc.getOwner().getId().equals(userId);
+            })
+            .map(meta -> meta.getDocument().getName())
+            .filter(Objects::nonNull)
+            .filter(name -> name.startsWith(baseName))
+            .collect(Collectors.toSet());
+
+        String candidateName = originalName;
+        int counter = 1;
+
+        while (existingNames.contains(candidateName)) {
+            candidateName = baseName + "(" + counter + ")." + extension;
+            counter++;
+        }
+
+        return candidateName;
+    }
+
 
 
 }

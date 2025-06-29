@@ -7,11 +7,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import io.documentprocessing.model.Document;
+import io.documentprocessing.model.DocumentMetadata;
 
 public interface DocumentRepository extends JpaRepository<Document, Long> {
     List<Document> findByType(String type); 
     
     Page<Document> findByOwnerId(Long userId, Pageable pageable);
+
+
 
 }
 

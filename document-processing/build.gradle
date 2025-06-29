@@ -55,10 +55,8 @@ dependencies {
     // Query parsing support (for flexible queries like "term~")
     implementation 'org.apache.lucene:lucene-queryparser:9.9.2'
 
-    // Optional: highlighter support if you want to highlight matched terms
     implementation 'org.apache.lucene:lucene-highlighter:9.9.2'
 
-    // Optional: monitor file system changes
     implementation 'org.apache.lucene:lucene-monitor:9.9.2'
 }
 

@@ -43,22 +43,23 @@ const UploadForm = ({ user, onUploadSuccess, visible, onClose, onTempUpload }) =
         formData.append('type', file.type);
         formData.append('userId', user.userId);
 
+       
         try {
             setUploading(true);
-            await axios.post(`${API_BASE_URL}/documents/upload`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                },
-                withCredentials: true 
+            const res = await axios.post(`${API_BASE_URL}/documents/upload`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+                withCredentials: true,
             });
-            onUploadSuccess(tempId);
-        }
-         catch (error) {
+
+            console.log("Upload success - backend response:", res.data);
+            onUploadSuccess(tempId, res.data);  // pass entire document
+        } catch (error) {
             console.error('Upload failed:', error);
             alert('Upload failed');
         } finally {
             setUploading(false);
         }
+
     };
 
     if (!visible) return null;

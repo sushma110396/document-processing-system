@@ -1,8 +1,6 @@
 package io.documentprocessing.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,12 +14,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,8 +31,8 @@ import io.documentprocessing.repository.DocumentMetadataRepository;
 import io.documentprocessing.repository.UserRepository;
 import io.documentprocessing.service.DocumentService;
 import io.documentprocessing.service.LuceneService;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.HttpStatus;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 
 @RestController
@@ -80,16 +76,19 @@ public class DocumentController {
     		 throw new IllegalArgumentException("Invalid user ID.");
     	 }
     	    
+    	 String finalName = documentService.getAvailableFileName(user.getId(), name);
     	 Document savedDocument;
 
     	 if (file.getSize() > MULTIPART_UPLOAD_THRESHOLD) { // Limit: 100MB
     	        // Multipart upload for large file
-    	    savedDocument = documentService.saveLargeDocument(file, name, type, user);
+    	    savedDocument = documentService.saveLargeDocument(file, finalName, type, user);
     	 } else {
     	        // Simple upload for small file
-    	    savedDocument = documentService.saveDocument(file, name, type, user);
+    	    savedDocument = documentService.saveDocument(file, finalName, type, user);
     	  }
     	
+    	 System.out.println("Saving file as: " + finalName);
+
     	 if (!type.equalsIgnoreCase("application/pdf")) {
     		    String extractedText = metadataRepository.findByDocumentId(savedDocument.getId())
     		        .map(meta -> meta.getExtractedText())
@@ -136,59 +135,53 @@ public class DocumentController {
     }
 
 
-    @GetMapping("/list")
+	
+    @GetMapping("/list") 
     public ResponseEntity<?> getUserDocuments(
-            @RequestParam(name = "userId") Long userId,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "10") int size,
-            @RequestParam(name = "type", required = false) String type) {
 
-        if (userId == null) {
-            return ResponseEntity.status(403).body("Forbidden");
-        }
-        Map<String, String> mimeTypes = Map.of(
-            "pdf", "application/pdf",
-            "docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            "image", "image/png" 
-        );
+    @RequestParam(name = "userId") Long userId,
 
-        Page<DocumentMetadata> metadataPage;
+    @RequestParam(name = "page", defaultValue = "0") int page,
 
-        if (type == null || type.equalsIgnoreCase("all")) {
-            metadataPage = metadataRepository.findByDocumentOwnerId(
-                userId, PageRequest.of(page, size, Sort.by("uploadTimestamp").descending()));
-        } else {
-            String mappedType = mimeTypes.getOrDefault(type.toLowerCase(), type); // fallback to raw type
-            metadataPage = metadataRepository.findByDocumentOwnerIdAndType(
-                userId, mappedType, PageRequest.of(page, size, Sort.by("uploadTimestamp").descending()));
-        }
+    @RequestParam(name = "size", defaultValue = "10") int size,
 
-        List<Map<String, Object>> responseDocs = metadataPage.getContent().stream().map(meta -> {
-            Document doc = meta.getDocument();
-            Map<String, Object> map = new HashMap<>();
-            map.put("id", doc.getId());
-            map.put("name", doc.getName());
-            map.put("type", doc.getType());
-            map.put("status", meta.getStatus());
-            map.put("uploadTimestamp", meta.getUploadTimestamp());
+    @RequestParam(name = "type", required = false) String type) {
 
-            Map<String, Object> ownerMap = new HashMap<>();
-            ownerMap.put("id", doc.getOwner().getId());
-            ownerMap.put("username", doc.getOwner().getUsername());
-            map.put("owner", ownerMap);
+    	if (userId == null) { return ResponseEntity.status(403).body("Forbidden"); }
+    	Map<String, String> mimeTypes = Map.of( "pdf", "application/pdf", "docx",
+    			"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    			"image", "image/png" );
 
-            return map;
-        }).collect(Collectors.toList());
+    	Page<DocumentMetadata> metadataPage;
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("documents", responseDocs);
-        response.put("currentPage", page);
-        response.put("totalPages", metadataPage.getTotalPages());
-        response.put("totalDocuments", metadataPage.getTotalElements());
+    	if (type == null || type.equalsIgnoreCase("all")) { metadataPage =
+    			metadataRepository.findByDocumentOwnerId( userId, PageRequest.of(page, size,
+    					Sort.by("uploadTimestamp").descending())); } else { String mappedType =
+    					mimeTypes.getOrDefault(type.toLowerCase(), type); // fallback to raw type
+    					metadataPage = metadataRepository.findByDocumentOwnerIdAndType( userId,
+    							mappedType, PageRequest.of(page, size,
+    									Sort.by("uploadTimestamp").descending())); }
 
-        return ResponseEntity.ok(response);
+    	List<Map<String, Object>> responseDocs =
+    			metadataPage.getContent().stream().map(meta -> { Document doc =
+    			meta.getDocument(); Map<String, Object> map = new HashMap<>(); map.put("id",
+    					doc.getId()); map.put("name", doc.getName()); map.put("type", doc.getType());
+    					map.put("status", meta.getStatus()); map.put("uploadTimestamp",
+    							meta.getUploadTimestamp());
+
+    					Map<String, Object> ownerMap = new HashMap<>(); ownerMap.put("id",
+    							doc.getOwner().getId()); ownerMap.put("username",
+    									doc.getOwner().getUsername()); map.put("owner", ownerMap);
+
+    									return map; }).collect(Collectors.toList());
+
+    	Map<String, Object> response = new HashMap<>(); response.put("documents",
+    			responseDocs); response.put("currentPage", page); response.put("totalPages",
+    					metadataPage.getTotalPages()); response.put("totalDocuments",
+    							metadataPage.getTotalElements());
+
+    					return ResponseEntity.ok(response); 
     }
-
 
     //View extracted text
     @GetMapping("/extracted-text/{id}")
@@ -196,30 +189,6 @@ public class DocumentController {
         return metadataRepository.findByDocumentId(documentId).map(metadata -> ResponseEntity.ok(metadata.getExtractedText()))
         		.orElse(ResponseEntity.notFound().build());
     }
-    
-   /*@PostMapping("/upload/bulk")
-    public ResponseEntity<Map<String, Object>> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files,  @AuthenticationPrincipal User user, UserRepository userRepository ) {
-        List<String> success = new ArrayList<>();
-        List<String> failed = new ArrayList<>();
-
-        for (MultipartFile file : files) {
-            try {
-                String name = file.getOriginalFilename();
-                String type = file.getContentType();
-                documentService.saveDocument(file, name, type, user);
-                success.add(name);
-            } catch (Exception e) {
-                failed.add(file.getOriginalFilename() + " - " + e.getMessage());
-            }
-        }
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("successfulUploads", success);
-        response.put("failedUploads", failed);
-        response.put("totalFiles", files.length);
-
-        return ResponseEntity.ok(response);
-    }*/
 
     @GetMapping("/search")
     public ResponseEntity<?> searchDocuments(

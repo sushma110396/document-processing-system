@@ -41,5 +41,5 @@ public interface DocumentMetadataRepository extends JpaRepository<DocumentMetada
     Page<DocumentMetadata> findByDocumentOwnerIdAndType(@Param("userId") Long userId, @Param("type") String type, Pageable pageable);
 
 
-
+    //List<DocumentMetadata> findByDocument_Owner_IdAndDocument_NameStartingWith(Long userId, String namePrefix);
 }

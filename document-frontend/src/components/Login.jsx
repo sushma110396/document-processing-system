@@ -41,6 +41,7 @@ const Login = ({ onLogin }) => {
     };
 
     const handleRegister = async () => {
+        setLoading(true);
         try {
             await axios.post("https://document-processing-system.onrender.com/auth/register", {
                 username,
@@ -50,16 +51,22 @@ const Login = ({ onLogin }) => {
                 withCredentials: true
             });
 
-            alert("Registration successful. Please log in.");
+            setToastMessage("Registration successful. Please log in.");
             setIsLoginMode(true); // Switch to login view
         } catch (err) {
             alert("Registration failed: " + (err.response?.data || "Unknown error"));
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
         <div className="login-wrapper">
-        { loading && <p className="loading-message">Logging in...</p>}
+            {loading && (
+                <p className="loading-message">
+                    {isLoginMode ? "Logging in... Please wait." : "Registering... Please wait."}
+                </p>
+            )}
         <div className="login">
             {toastMessage && (
                 <div className="toast">

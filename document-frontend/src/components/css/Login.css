@@ -137,3 +137,9 @@
     color: black;
 }
 
+.loading-message {
+    color: #0077cc;
+    font-weight: bold;
+    margin-bottom: 16px; /* Add spacing below the message */
+    text-align: center;
+}
