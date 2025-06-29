@@ -61,6 +61,7 @@ const UserDocuments = ({ user, documents, onDocumentDelete }) => {
     return (
         <div className="user-documents">
             <ul className="documents-list">
+                console.log("Rendering document:", doc);
                 {documents.map((doc) => (
                     <li key={doc.id}>
                         <span>{doc.name}</span>
