@@ -12,7 +12,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
             .allowedOrigins(
                 "http://localhost:5173", 
-                "http://document-processing-system.s3-website-us-west-1.amazonaws.com"
+                "https://document-processing-system.s3.us-west-1.amazonaws.com"
             )
             .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
             .allowedHeaders("*")
