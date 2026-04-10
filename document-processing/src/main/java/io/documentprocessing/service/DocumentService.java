@@ -172,15 +172,19 @@ public class DocumentService {
 
 
     public void deleteDocument(Long id, User currentUser) {
-        Document document = documentRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Document not found"));
+    Document document = documentRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Document not found"));
 
-        if (!document.getOwner().getId().equals(currentUser.getId())) {
-            throw new SecurityException("You are not authorized to delete this document.");
-        }
+    // 🔍 DEBUG LOGS
+    System.out.println("Doc owner id: " + document.getOwner().getId());
+    System.out.println("Current user id: " + (currentUser != null ? currentUser.getId() : null));
 
-        documentRepository.delete(document);
+    if (!document.getOwner().getId().equals(currentUser.getId())) {
+        throw new SecurityException("You are not authorized to delete this document.");
     }
+
+    documentRepository.delete(document);
+}
 
     
     //Download doc from S3 service
